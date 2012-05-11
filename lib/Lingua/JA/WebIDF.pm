@@ -29,7 +29,7 @@ sub _options
         driver        => 'Storable',
         app           => 'Bing',
         appid         => undef,
-        furl_http_opt => undef,
+        Furl_HTTP     => undef,
     };
 }
 
@@ -47,6 +47,13 @@ sub new
     }
 
     Carp::croak('appid is needed') unless length $options->{appid};
+
+
+    if (defined $options->{Furl_HTTP})
+    {
+        $options->{furl_http} = Furl::HTTP->new($options->{Furl_HTTP});
+    }
+    else { $options->{furl_http} = Furl::HTTP->new; }
 
     bless $options, $class;
 }
@@ -135,7 +142,7 @@ sub _fetch_new_df
     my ($self, $word) = @_;
 
     my $app  = $self->{app};
-    my $furl = Furl::HTTP->new;
+    my $furl = $self->{furl_http};
 
     my $df;
 

@@ -6,7 +6,6 @@ use Test::More;
 use Test::Warn;
 use Test::TCP;
 use JSON;
-use Furl::HTTP;
 use Storable;
 use TokyoCabinet;
 use Encode qw/decode_utf8/;

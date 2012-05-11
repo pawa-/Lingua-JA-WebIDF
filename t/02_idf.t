@@ -7,7 +7,6 @@ use Test::Fatal;
 use Test::Warn;
 use Test::TCP;
 use JSON;
-use Furl::HTTP;
 use Encode qw/decode_utf8/;
 use Test::Requires qw/Plack::Builder Plack::Request Plack::Handler::Standalone/;
 
