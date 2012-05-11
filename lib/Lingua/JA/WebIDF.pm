@@ -26,10 +26,10 @@ sub _options
         fetch_df   => 1,
         default_df => 1_0000,
         expires_in => 365, # number of days
-        Furl_HTTP  => undef,
         driver     => 'Storable',
         app        => 'Bing',
         appid      => undef,
+        Furl_HTTP  => undef,
     };
 }
 

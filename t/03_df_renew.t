@@ -31,6 +31,9 @@ $hdb->open('df.tch', $hdb->OWRITER | $hdb->OCREAT)
 $hdb->put('オコジョさん', "10000\t0")     or warn( $hdb->errmsg($hdb->ecode) );
 $hdb->put('ちょろり', 1000 . "\t" . time) or warn( $hdb->errmsg($hdb->ecode) );
 
+my $time = time - (60 * 60 * 24 * 30);
+$hdb->put( 'タッチン', "100\t$time") or warn( $hdb->errmsg($hdb->ecode) );
+
 $hdb->close or die( $hdb->errmsg($hdb->ecode) );
 
 my @patterns = (
@@ -94,6 +97,23 @@ my @patterns = (
         query    => 'タッチン',
         hit      => 0,
     },
+    {
+        app      => 'Bing',
+        driver   => 'TokyoCabinet',
+        df_file  => 'df.tch',
+        fetch_df => 1,
+        query    => 'タッチン',
+        hit      => 100,
+    },
+    {
+        app        => 'Bing',
+        driver     => 'TokyoCabinet',
+        df_file    => 'df.tch',
+        fetch_df   => 1,
+        expires_in => 1,
+        query      => 'タッチン',
+        hit        => 0,
+    },
 );
 
 test_tcp(
@@ -112,8 +132,9 @@ test_tcp(
                 fetch_df   => $pattern->{fetch_df},
             );
 
-            $config{driver}  = $pattern->{driver}  if exists $pattern->{driver};
-            $config{df_file} = $pattern->{df_file} if exists $pattern->{df_file};
+            $config{driver}     = $pattern->{driver}     if exists $pattern->{driver};
+            $config{df_file}    = $pattern->{df_file}    if exists $pattern->{df_file};
+            $config{expires_in} = $pattern->{expires_in} if exists $pattern->{expires_in};
 
             my $webidf = Lingua::JA::WebIDF->new(%config);
 
