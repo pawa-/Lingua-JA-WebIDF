@@ -11,7 +11,7 @@ use JSON ();
 use Storable ();
 use TokyoCabinet;
 
-our $VERSION = '0.00_1';
+our $VERSION = '0.00_2';
 
 our $BING_API_URL          = 'http://api.bing.net/json.aspx';
 our $YAHOO_API_URL         = 'http://search.yahooapis.jp/WebSearchService/V2/webSearch';
@@ -22,10 +22,10 @@ sub _options
 {
     return {
         documents  => 250_0000_0000,
-        df_file    => './df',
+        df_file    => './df_bing.st',
         fetch_df   => 1,
-        default_df => 125_0000_0000,
-        expires    => 365,
+        default_df => 1_0000,
+        expires_in => 365, # number of days
         Furl_HTTP  => undef,
         driver     => 'Storable',
         app        => 'Bing',
@@ -69,18 +69,32 @@ sub df
 
     my $driver = $self->{driver};
 
-    my $df;
+    my $df_and_time;
 
-    if    ($driver eq 'Storable')     { $df = $self->_fetch_df_Storable($word); }
-    elsif ($driver eq 'TokyoCabinet') { $df = $self->_fetch_df_TokyoCabinet($word); }
+    if    ($driver eq 'Storable')     { $df_and_time = $self->_fetch_df_Storable($word); }
+    elsif ($driver eq 'TokyoCabinet') { $df_and_time = $self->_fetch_df_TokyoCabinet($word); }
     else                              { Carp::croak("Unknown driver: $driver"); }
 
-    if (!defined $df)
-    {
-        $df = $self->_fetch_new_df($word) if $self->{fetch_df};
+    my ($df, $time, $elapsed_time);
 
-        if (defined $df) { $self->_save_idf($word, $df); }
-        else             { return $self->{default_df}; }
+    if (defined $df_and_time)
+    {
+        ($df, $time)  = split(/\t/, $df_and_time);
+        $elapsed_time = time - $time;
+    }
+
+    if ( !defined $df_and_time || $elapsed_time > (60 * 60 * 24 * $self->{expires_in}) )
+    {
+        my $new_df;
+
+        $new_df = $self->_fetch_new_df($word) if $self->{fetch_df};
+
+        if (defined $new_df)
+        {
+            $self->_save_df($word, $new_df);
+            return $new_df;
+        }
+        else { return (defined $df) ? $df : $self->{default_df}; }
     }
 
     return $df;
@@ -92,7 +106,7 @@ sub _fetch_df_Storable
 
     if (!exists $self->{df} && -s $self->{df_file})
     {
-        $self->{df} = Storable::retrieve($self->{df_file});
+        $self->{df} = Storable::lock_retrieve($self->{df_file});
     }
 
     my $df = $self->{df};
@@ -106,7 +120,7 @@ sub _fetch_df_TokyoCabinet
 
     my $hdb = TokyoCabinet::HDB->new;
 
-    $hdb->open($self->{df_file}, $hdb->OWRITER | $hdb->OCREAT | $hdb-> ONOLCK)
+    $hdb->open($self->{df_file}, $hdb->OWRITER | $hdb->OCREAT)
         or Carp::croak( $hdb->errmsg($hdb->ecode) );
 
     my $df = $hdb->get($word); # or Carp::carp( $hdb->errmsg($hdb->ecode) );
@@ -131,7 +145,7 @@ sub _fetch_new_df
 
         $url->query_form(
             'Appid'     => $self->{appid},
-            'query'     => $word,
+            'query'     => qq|"$word"|,
             'sources'   => 'web',
             'web.count' => 1,
         );
@@ -154,7 +168,7 @@ sub _fetch_new_df
 
         $url->query_form(
             'appid'    => $self->{appid},
-            'query'    => $word,
+            'query'    => qq|"$word"|,
             'type'     => 'all', # query type
             'format'   => 'any', # file format
             'adult_ok' => 1,
@@ -177,29 +191,30 @@ sub _fetch_new_df
     return $df;
 }
 
-sub _save_idf
+sub _save_df
 {
     my ($self, $word, $df) = @_;
 
-    my $driver = $self->{driver};
+    my $driver      = $self->{driver};
+    my $df_and_time = $df . "\t" . time;
 
     if ($driver eq 'Storable')
     {
         my $df_ref = $self->{df};
-        $df_ref->{$word} = $df;
+        $df_ref->{$word} = $df_and_time;
 
-        Storable::nstore($df_ref, $self->{df_file})
+        Storable::lock_nstore($df_ref, $self->{df_file})
             or Carp::croak("Can't store df data to $self->{df_file}");
     }
     elsif ($driver eq 'TokyoCabinet')
     {
         my $hdb = TokyoCabinet::HDB->new;
 
-        $hdb->open($self->{df_file}, $hdb->OWRITER | $hdb->OCREAT | $hdb->ONOLCK)
+        $hdb->open($self->{df_file}, $hdb->OWRITER | $hdb->OCREAT)
             or Carp::croak( $hdb->errmsg($hdb->ecode) );
 
         # If a record with the same key exists in the database, it is overwritten.
-        $hdb->put($word, $df) or Carp::carp( $hdb->errmsg($hdb->ecode) );
+        $hdb->put($word, $df_and_time) or Carp::carp( $hdb->errmsg($hdb->ecode) );
 
         $hdb->close or Carp::croak( $hdb->errmsg($hdb->ecode) );
     }
@@ -210,7 +225,10 @@ __END__
 
 =head1 NAME
 
-Lingua::JA::WebIDF -
+Lingua::JA::WebIDF - WebIDF calculator
+
+=for test_synopsis
+my (%config);
 
 =head1 SYNOPSIS
 
@@ -218,13 +236,33 @@ Lingua::JA::WebIDF -
 
 =head1 DESCRIPTION
 
-Lingua::JA::WebIDF is
+Lingua::JA::WebIDF calculates WebIDF.
+
+WebIDF(Inverse Document Frequency) represents the rarity of a word on the Web.
+If a word is rare, its WebIDF is high.
+Conversely, if a word is common, its WebIDF is low.
+
+=head1 METHOD
+
+=over 4
+
+=item new(%config)
+
+Creates a new Lingua::JA::WebIDF instance.
+
+=item idf($word)
+
+=item df($word)
+
+=back
 
 =head1 AUTHOR
 
 pawa- E<lt>pawapawa@cpan.orgE<gt>
 
 =head1 SEE ALSO
+
+L<Lingua::JA::TFIDF>
 
 =head1 LICENSE
 

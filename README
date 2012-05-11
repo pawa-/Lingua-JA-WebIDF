@@ -1,16 +1,29 @@
 NAME
-    Lingua::JA::WebIDF -
+    Lingua::JA::WebIDF - WebIDF calculator
 
 SYNOPSIS
       use Lingua::JA::WebIDF;
 
 DESCRIPTION
-    Lingua::JA::WebIDF is
+    Lingua::JA::WebIDF calculates WebIDF.
+
+    WebIDF(Inverse Document Frequency) represents the rarity of a word on
+    the Web. If a word is rare, its WebIDF is high. Conversely, if a word is
+    common, its WebIDF is low.
+
+METHOD
+    new(%config)
+        Creates a new Lingua::JA::WebIDF instance.
+
+    idf($word)
+    df($word)
 
 AUTHOR
     pawa- <pawapawa@cpan.org>
 
 SEE ALSO
+    Lingua::JA::TFIDF
+
 LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.

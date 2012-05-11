@@ -3,11 +3,11 @@ use warnings;
 use utf8;
 use Lingua::JA::WebIDF;
 use Test::More;
-use Test::Fatal;
-use Test::Warn;
 use Test::TCP;
 use JSON;
 use Furl::HTTP;
+use Storable;
+use TokyoCabinet;
 use Encode qw/decode_utf8/;
 use Test::Requires qw/Plack::Builder Plack::Request Plack::Handler::Standalone/;
 
@@ -15,159 +15,84 @@ use Test::Requires qw/Plack::Builder Plack::Request Plack::Handler::Standalone/;
 unlink 'df.st';
 unlink 'df.tch';
 
+my $df = {
+    'オコジョさん' => "10000\t0",
+    'ちょろり'     => 1000 . "\t" . time,
+    'タッチン'     => "100\t1",
+};
+
+Storable::nstore($df, 'df.st');
+
+my $hdb = TokyoCabinet::HDB->new;
+
+$hdb->open('df.tch', $hdb->OWRITER | $hdb->OCREAT)
+    or die( $hdb->errmsg($hdb->ecode) );
+
+$hdb->put('オコジョさん', "10000\t0")     or warn( $hdb->errmsg($hdb->ecode) );
+$hdb->put('ちょろり', 1000 . "\t" . time) or warn( $hdb->errmsg($hdb->ecode) );
+
+$hdb->close or die( $hdb->errmsg($hdb->ecode) );
+
 my @patterns = (
     {
-        app       => 'Bong',
-        driver    => 'Storable',
-        df_file   => 'df.st',
-        fetch_df  => 1,
-        exception => 'Unknown app',
-    },
-    {
-        app       => 'Bing',
-        driver    => 'Strable',
-        df_file   => 'df.st',
-        fetch_df  => 0,
-        exception => 'Unknown driver',
-    },
-    {
-        app      => 'Bing',
-        driver   => 'Storable',
-        df_file  => 'df.st',
-        fetch_df => 0,
-    },
-    {
-        app      => 'Yahoo',
-        driver   => 'Storable',,
-        df_file  => 'df.st',
-        fetch_df => 0,
-    },
-    {
-        app      => 'Yahoo_Premium',
-        driver   => 'Storable',
-        df_file  => 'df.st',
-        fetch_df => 0,
-    },
-    {
-        app      => 'Bing',
-        driver   => 'TokyoCabinet',
-        df_file  => 'df.tch',
-        fetch_df => 0,
-    },
-    {
-        app      => 'Yahoo',
-        driver   => 'TokyoCabinet',
-        df_file  => 'df.tch',
-        fetch_df => 0,
-    },
-    {
-        app      => 'Yahoo_Premium',
-        driver   => 'TokyoCabinet',
-        df_file  => 'df.tch',
-        fetch_df => 0,
-    },
-    {
-        app      => 'Bing',
-        driver   => 'Storable',
-        df_file  => 'df.st',
-        fetch_df => 1,
-    },
-    {
-        app      => 'Yahoo',
-        driver   => 'Storable',
-        df_file  => 'df.st',
-        fetch_df => 1,
-    },
-    {
-        app      => 'Yahoo_Premium',
-        driver   => 'Storable',
-        df_file  => 'df.st',
-        fetch_df => 1,
-    },
-    {
-        app      => 'Bing',
-        driver   => 'TokyoCabinet',
-        df_file  => 'df.tch',
-        fetch_df => 1,
-    },
-    {
-        app      => 'Yahoo',
-        driver   => 'TokyoCabinet',
-        df_file  => 'df.tch',
-        fetch_df => 1,
-    },
-    {
-        app      => 'Yahoo_Premium',
-        driver   => 'TokyoCabinet',
-        df_file  => 'df.tch',
-        fetch_df => 1,
-    },
-    {
-        app      => 'Bing',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => 'コジョピー', # no hit
-    },
-    {
-        app      => 'Bing',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => '500',
-        warning  => 'Bing: 500 Internal Server Error',
-    },
-    {
-        app      => 'Yahoo',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => '500',
-        warning  => 'Yahoo: 500 Internal Server Error',
-    },
-    {
-        app      => 'Yahoo',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => 'unavailable',
-        warning  => 'Yahoo: Service unavailable.Too many users',
-    },
-    {
-        app      => 'Yahoo',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => 'コジョピー', # no hit
-    },
-    {
-        app      => 'Yahoo_Premium',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => '500',
-        warning  => 'Yahoo_Premium: 500 Internal Server Error',
-    },
-    {
-        app      => 'Yahoo_Premium',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => 'unavailable',
-        warning  => 'Yahoo_Premium: Service unavailable.Too many users',
-    },
-    {
-        app      => 'Yahoo_Premium',
-        df_file  => 'df.st',
-        fetch_df => 1,
-        query    => 'コジョピー', # no hit
-    },
-    {
         app       => 'Bing',
         driver    => 'Storable',
         df_file   => 'df.st',
         fetch_df  => 1,
-        test_type => 'fetch df by Storable',
+        query     => 'ちょろり',
+        hit       => 1000,
     },
     {
-        app       => 'Yahoo',
+        app      => 'Yahoo',
+        driver   => 'Storable',
+        df_file  => 'df.st',
+        fetch_df => 0,
+        hit      => 10000,
+    },
+    {
+        app      => 'Yahoo_Premium',
+        driver   => 'Storable',
+        df_file  => 'df.st',
+        fetch_df => 1,
+        hit      => 2270000,
+    },
+    {
+        app       => 'Bing',
         driver    => 'TokyoCabinet',
         df_file   => 'df.tch',
-        fetch_df  => 1,
-        test_type => 'fetch df by TokyoCabinet',
+        fetch_df  => 0,
+        query     => 'ちょろり',
+        hit       => 1000,
+    },
+    {
+        app      => 'Yahoo',
+        driver   => 'TokyoCabinet',
+        df_file  => 'df.tch',
+        fetch_df => 1,
+        hit      => 2230000,
+    },
+    {
+        app      => 'Yahoo_Premium',
+        driver   => 'TokyoCabinet',
+        df_file  => 'df.tch',
+        fetch_df => 1,
+        hit      => 2230000,
+    },
+    {
+        app      => 'Bing',
+        driver   => 'Storable',
+        df_file  => 'df.st',
+        fetch_df => 0,
+        query    => 'タッチン',
+        hit      => 100,
+    },
+    {
+        app      => 'Bing',
+        driver   => 'Storable',
+        df_file  => 'df.st',
+        fetch_df => 1,
+        query    => 'タッチン',
+        hit      => 0,
     },
 );
 
@@ -179,17 +104,12 @@ test_tcp(
         local $Lingua::JA::WebIDF::YAHOO_API_URL         = "http://127.0.0.1:$port/yahoo/";
         local $Lingua::JA::WebIDF::YAHOO_PREMIUM_API_URL = "http://127.0.0.1:$port/yahoo_premium/";
 
-        my $documents  = 300_0000_0000;
-        my $default_df = 150_0000_0000;
-
         for my $pattern (@patterns)
         {
             my %config = (
                 app        => $pattern->{app},
                 appid      => 'test',
                 fetch_df   => $pattern->{fetch_df},
-                documents  => $documents,
-                default_df => $default_df,
             );
 
             $config{driver}  = $pattern->{driver}  if exists $pattern->{driver};
@@ -197,48 +117,11 @@ test_tcp(
 
             my $webidf = Lingua::JA::WebIDF->new(%config);
 
-            my $query  = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
+            my $query = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
 
-            if (exists $pattern->{exception})
-            {
-                like(exception { $webidf->idf($query) }, qr/$pattern->{exception}/, 'exception');
-            }
-            else
-            {
-                my ($df, $idf);
+            my $df = $webidf->df($query);
 
-                if (exists $pattern->{test_type})
-                {
-                    $Lingua::JA::WebIDF::BING_API_URL          = "http://127.0.0.1:$port/404/";
-                    $Lingua::JA::WebIDF::YAHOO_API_URL         = "http://127.0.0.1:$port/404/";
-                    $Lingua::JA::WebIDF::YAHOO_PREMIUM_API_URL = "http://127.0.0.1:$port/404/";
-                }
-
-                if (exists $pattern->{warning})
-                {
-                    warning_is { $df  = $webidf->df($query)  } $pattern->{warning}, 'df warning';
-                    warning_is { $idf = $webidf->idf($query) } $pattern->{warning}, 'idf warning';
-                }
-                else
-                {
-                    $df  = $webidf->df($query);
-                    $idf = $webidf->idf($query);
-                }
-
-                if ($pattern->{fetch_df})
-                {
-                    if ($pattern->{warning} && !exists $pattern->{test_type})
-                    {
-                        is($df, $default_df, 'default df');
-                    }
-                    else { isnt($df, $default_df, 'fetch_df'); }
-                }
-                else { is($df, $default_df, 'default df'); }
-
-                $df = 1 if $df == 0; # To avoid dividing by zero.
-
-                is( $idf, log($documents / $df), 'idf' );
-            }
+            is($df, $pattern->{hit}, 'df');
         }
 
         unlink 'df.st';
@@ -251,7 +134,6 @@ test_tcp(
             mount '/bing/'          => \&bing;
             mount '/yahoo/'         => \&yahoo;
             mount '/yahoo_premium/' => \&yahoo_premium;
-            mount '/404/'           => \&not_found;
         };
 
         my $server = Plack::Handler::Standalone->new(
@@ -291,10 +173,6 @@ sub bing
                 })
             ],
         ];
-    }
-    elsif ($query eq '500')
-    {
-        return [ 500, [ 'Content-Type' => 'text/plain' ], [ '500 Internal Server Error' ] ];
     }
     else
     {
@@ -347,25 +225,6 @@ sub yahoo
             ],
         ];
     }
-    elsif ($query eq '500')
-    {
-        return [ 500, [ 'Content-Type' => 'text/plain' ], [ '500 Internal Server Error' ] ];
-    }
-    elsif ($query eq 'unavailable')
-    {
-        return [
-            200,
-            [ 'Content-Type' => 'application/xml' ],
-            [
-                qq|
-                    <?xml version='1.0' encoding='utf-8'?>
-                    <Error>
-                        <Message>Service unavailable.Too many users</Message>
-                    </Error>
-                |
-            ],
-        ];
-    }
     else
     {
         return [
@@ -411,25 +270,6 @@ sub yahoo_premium
             ],
         ];
     }
-    elsif ($query eq '500')
-    {
-        return [ 500, [ 'Content-Type' => 'text/plain' ], [ '500 Internal Server Error' ] ];
-    }
-    elsif ($query eq 'unavailable')
-    {
-        return [
-            200,
-            [ 'Content-Type' => 'application/xml' ],
-            [
-                qq|
-                    <?xml version='1.0' encoding='utf-8'?>
-                    <Error>
-                        <Message>Service unavailable.Too many users</Message>
-                    </Error>
-                |
-            ],
-        ];
-    }
     else
     {
         return [
@@ -443,12 +283,4 @@ sub yahoo_premium
             ],
         ];
     }
-}
-
-sub not_found
-{
-    my $env = shift;
-    my $req = Plack::Request->new($env);
-
-    return [ 404, [ 'Content-Type' => 'text/plain' ], [ '404 Not Found' ] ];
 }

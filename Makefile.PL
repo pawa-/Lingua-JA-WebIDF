@@ -7,11 +7,14 @@ requires 'Carp';
 requires 'URI';
 requires 'Furl::HTTP';
 requires 'JSON';
-requires 'XML::LibXML';
 requires 'Storable';
 requires 'TokyoCabinet';
+
 test_requires 'Test::More' => 0.88; # done_testing
 test_requires 'Test::Fatal';
+test_requires 'Test::Warn';
+test_requires 'Test::TCP';
+test_requires 'Test::Requires';
 
 tests 't/*.t';
 author_tests 'xt';
