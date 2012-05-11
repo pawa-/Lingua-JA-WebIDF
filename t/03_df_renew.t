@@ -3,6 +3,7 @@ use warnings;
 use utf8;
 use Lingua::JA::WebIDF;
 use Test::More;
+use Test::Warn;
 use Test::TCP;
 use JSON;
 use Furl::HTTP;
@@ -19,6 +20,7 @@ my $df = {
     'オコジョさん' => "10000\t0",
     'ちょろり'     => 1000 . "\t" . time,
     'タッチン'     => "100\t1",
+    '500'          => "10\t0",
 };
 
 Storable::nstore($df, 'df.st');
@@ -38,12 +40,12 @@ $hdb->close or die( $hdb->errmsg($hdb->ecode) );
 
 my @patterns = (
     {
-        app       => 'Bing',
-        driver    => 'Storable',
-        df_file   => 'df.st',
-        fetch_df  => 1,
-        query     => 'ちょろり',
-        hit       => 1000,
+        app      => 'Bing',
+        driver   => 'Storable',
+        df_file  => 'df.st',
+        fetch_df => 1,
+        query    => 'ちょろり',
+        hit      => 1000,
     },
     {
         app      => 'Yahoo',
@@ -60,12 +62,12 @@ my @patterns = (
         hit      => 2270000,
     },
     {
-        app       => 'Bing',
-        driver    => 'TokyoCabinet',
-        df_file   => 'df.tch',
-        fetch_df  => 0,
-        query     => 'ちょろり',
-        hit       => 1000,
+        app      => 'Bing',
+        driver   => 'TokyoCabinet',
+        df_file  => 'df.tch',
+        fetch_df => 0,
+        query    => 'ちょろり',
+        hit      => 1000,
     },
     {
         app      => 'Yahoo',
@@ -123,6 +125,15 @@ my @patterns = (
         query      => 'タッチン',
         hit        => 0,
     },
+    {
+        app      => 'Bing',
+        driver   => 'Storable',
+        df_file  => 'df.st',
+        fetch_df => 1,
+        query    => '500',
+        hit      => 10,
+        warning  => 'Bing: 500 Internal Server Error',
+    },
 );
 
 test_tcp(
@@ -149,7 +160,13 @@ test_tcp(
 
             my $query = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
 
-            my $df = $webidf->df($query);
+            my $df;
+
+            if (exists $pattern->{warning})
+            {
+                warning_is { $df = $webidf->df($query) } $pattern->{warning}, 'df warning';
+            }
+            else { $df = $webidf->df($query); }
 
             is($df, $pattern->{hit}, 'df');
         }
@@ -203,6 +220,10 @@ sub bing
                 })
             ],
         ];
+    }
+    elsif ($query eq '500')
+    {
+        return [ 500, [ 'Content-Type' => 'text/plain' ], [ '500 Internal Server Error' ] ];
     }
     else
     {
