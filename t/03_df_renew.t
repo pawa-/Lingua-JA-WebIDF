@@ -17,10 +17,10 @@ unlink 'df.st';
 unlink 'df.tch';
 
 my $df = {
-    'オコジョさん' => "10000\t0",
-    'ちょろり'     => 1000 . "\t" . time,
-    'タッチン'     => "100\t1",
-    '500'          => "10\t0",
+    'オコジョ' => "10000\t0",
+    'ちょろり' => 1000 . "\t" . time,
+    'タッチン' => "100\t1",
+    '500'      => "10\t0",
 };
 
 Storable::nstore($df, 'df.st');
@@ -30,7 +30,7 @@ my $hdb = TokyoCabinet::HDB->new;
 $hdb->open('df.tch', $hdb->OWRITER | $hdb->OCREAT)
     or die( $hdb->errmsg($hdb->ecode) );
 
-$hdb->put('オコジョさん', "10000\t0")     or warn( $hdb->errmsg($hdb->ecode) );
+$hdb->put('オコジョ', "10000\t0")         or warn( $hdb->errmsg($hdb->ecode) );
 $hdb->put('ちょろり', 1000 . "\t" . time) or warn( $hdb->errmsg($hdb->ecode) );
 
 my $time = time - (60 * 60 * 24 * 30);

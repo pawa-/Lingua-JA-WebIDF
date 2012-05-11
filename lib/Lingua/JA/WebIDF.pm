@@ -21,15 +21,15 @@ our $YAHOO_PREMIUM_API_URL = 'http://search.yahooapis.jp/PremiumWebSearchService
 sub _options
 {
     return {
-        documents  => 250_0000_0000,
-        df_file    => './df_bing.st',
-        fetch_df   => 1,
-        default_df => 1_0000,
-        expires_in => 365, # number of days
-        driver     => 'Storable',
-        app        => 'Bing',
-        appid      => undef,
-        Furl_HTTP  => undef,
+        documents     => 250_0000_0000,
+        df_file       => './df_bing.st',
+        fetch_df      => 1,
+        default_df    => 5000,
+        expires_in    => 365, # number of days
+        driver        => 'Storable',
+        app           => 'Bing',
+        appid         => undef,
+        furl_http_opt => undef,
     };
 }
 
