@@ -230,38 +230,102 @@ sub _save_df
 1;
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Lingua::JA::WebIDF - WebIDF calculator
 
 =for test_synopsis
-my (%config);
+my ($appid);
 
 =head1 SYNOPSIS
 
   use Lingua::JA::WebIDF;
 
+  my $webidf = Lingua::JA::WebIDF->new
+  (
+      app       => 'Bing',
+      appid     => $appid,
+      driver    => 'Storable',
+      df_file   => './df_bing.st',
+      fetch_df  => 1,
+      Furl_HTTP => { timeout => 3 }
+  );
+
+  print $webidf->idf("東京"); # low
+  print $webidf->idf("スリジャヤワルダナプラコッテ"); # high
+
 =head1 DESCRIPTION
 
 Lingua::JA::WebIDF calculates WebIDF.
 
-WebIDF(Inverse Document Frequency) represents the rarity of a word on the Web.
-If a word is rare, its WebIDF is high.
-Conversely, if a word is common, its WebIDF is low.
+WebIDF(Inverse Document Frequency) represents the rarity of words on the Web.
+The WebIDF of rare words is high.
+Conversely, the WebIDF of common words is low.
 
 =head1 METHOD
 
-=over 4
-
-=item new(%config)
+=head2 new( [%config | \%config] )
 
 Creates a new Lingua::JA::WebIDF instance.
 
-=item idf($word)
+The following key/value is used if you don't set key/value.
 
-=item df($word)
+  KEY                 DEFAULT VALUE
+  -----------         ---------------
+  app                 'Bing'
+  appid               undef
+  driver              'Storable'
+  df_file             './df_bing.st'
+  fetch_df            1
+  expires_in          365
+  documents           250_0000_0000
+  default_df          5000
+  Furl_HTTP           undef
+
+=over 4
+
+=item app => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
+
+Uses the specified app when fetches WebDF(Document Frequency).
+
+=item driver => 'Storable' | 'TokyoCabinet'
+
+Fetches and saves WebDF with the specified driver.
+
+=item fech_df => 0
+
+Doesn't fetch WebDF. (If 0 is specified.)
+
+If the WebDF you want to know is already saved, it is used.
+Otherwise, default_df is used.
+
+=item expires_in
+
+If 365 is specified, The WebDF is expires in 365 days after fetches it.
+
+=item Furl_HTTP => HashRef
+
+Sets the options of L<Furl::HTTP>->new.
+
+If you want to use proxy server, you have to use this option.
 
 =back
+
+=head2 idf($word)
+
+Calculates the WebIDF of $word.
+
+If WebDF of $word is not saved, fetches it by using a Web API
+and saves it.
+
+=head2 df($word)
+
+Fetches WebDF of $word.
+
+If WebDF of $word is not saved, fetches it by using a Web API
+and saves it.
 
 =head1 AUTHOR
 

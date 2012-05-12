@@ -8,3 +8,7 @@ __DATA__
 pawa-
 pawapawa@cpan.org
 Lingua::JA::WebIDF
+WebDF
+API
+Storable
+TokyoCabinet
