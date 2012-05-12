@@ -303,7 +303,7 @@ Specifies the saving path of WebDF scores.
 Doesn't fetch WebDF scores. (If 0 is specified.)
 
 If the WebDF score you want to know is already saved, it is used.
-Otherwise, default_df is used.
+Otherwise, the value of default_df is used.
 
 =item expires_in
 
@@ -322,14 +322,14 @@ If you want to use proxy server, you have to use this option.
 Calculates the WebIDF score of $word.
 
 If the WebDF score of $word is not saved, fetches it by using a Web API
-and saves it.
+you specified and saves it.
 
 =head2 df($word)
 
 Fetches WebDF score of $word.
 
-If the WebDF score of $word is not saved, fetches it by using a Web API
-and saves it.
+If the WebDF score of $word is not saved, fetches it by using the Web API
+you specified and saves it.
 
 =head1 AUTHOR
 

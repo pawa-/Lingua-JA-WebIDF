@@ -56,7 +56,7 @@ METHOD
         Doesn't fetch WebDF scores. (If 0 is specified.)
 
         If the WebDF score you want to know is already saved, it is used.
-        Otherwise, default_df is used.
+        Otherwise, the value of default_df is used.
 
     expires_in
         If 365 is specified, The WebDF score is expires in 365 days after
@@ -71,13 +71,13 @@ METHOD
     Calculates the WebIDF score of $word.
 
     If the WebDF score of $word is not saved, fetches it by using a Web API
-    and saves it.
+    you specified and saves it.
 
   df($word)
     Fetches WebDF score of $word.
 
-    If the WebDF score of $word is not saved, fetches it by using a Web API
-    and saves it.
+    If the WebDF score of $word is not saved, fetches it by using the Web
+    API you specified and saves it.
 
 AUTHOR
     pawa <pawapawa@cpan.org>
