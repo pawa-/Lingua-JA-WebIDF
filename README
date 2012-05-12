@@ -28,7 +28,7 @@ METHOD
   new( [%config | \%config] )
     Creates a new Lingua::JA::WebIDF instance.
 
-    The following key/value is used if you don't set key/value.
+    The following configuration is used if you don't set %config.
 
       KEY                 DEFAULT VALUE
       -----------         ---------------
@@ -52,8 +52,9 @@ METHOD
     df_file
         Saves WebDF scores to the specified path.
 
-        I recommend that you change the file name depending on the value of
-        api.
+        I recommend that you change the file name depending on the kind of
+        Web API you specifies because WebDF may be different depending on
+        Web API.
 
     fech_df => 0
         Doesn't fetch WebDF scores. (If 0 is specified.)
@@ -73,14 +74,14 @@ METHOD
   idf($word)
     Calculates the WebIDF score of $word.
 
-    If the WebDF score of $word is not saved, fetches it by using the Web
-    API you specified and saves it.
+    If the WebDF score of $word is not saved or is expired, fetches it by
+    using the Web API you specified and saves it.
 
   df($word)
-    Fetches WebDF score of $word.
+    Fetches the WebDF score of $word.
 
-    If the WebDF score of $word is not saved, fetches it by using the Web
-    API you specified and saves it.
+    If the WebDF score of $word is not saved or is expired, fetches it by
+    using the Web API you specified and saves it.
 
 AUTHOR
     pawa <pawapawa@cpan.org>

@@ -270,7 +270,7 @@ Conversely, the WebIDF scores of common words are low.
 
 Creates a new Lingua::JA::WebIDF instance.
 
-The following key/value is used if you don't set key/value.
+The following configuration is used if you don't set %config.
 
   KEY                 DEFAULT VALUE
   -----------         ---------------
@@ -299,7 +299,8 @@ Fetches and saves WebDF scores with the specified driver.
 
 Saves WebDF scores to the specified path.
 
-I recommend that you change the file name depending on the value of api.
+I recommend that you change the file name depending on the kind of Web API
+you specifies because WebDF may be different depending on Web API.
 
 =item fech_df => 0
 
@@ -324,15 +325,15 @@ If you want to use proxy server, you have to use this option.
 
 Calculates the WebIDF score of $word.
 
-If the WebDF score of $word is not saved, fetches it by using the Web API
-you specified and saves it.
+If the WebDF score of $word is not saved or is expired,
+fetches it by using the Web API you specified and saves it.
 
 =head2 df($word)
 
-Fetches WebDF score of $word.
+Fetches the WebDF score of $word.
 
-If the WebDF score of $word is not saved, fetches it by using the Web API
-you specified and saves it.
+If the WebDF score of $word is not saved or is expired,
+fetches it by using the Web API you specified and saves it.
 
 =head1 AUTHOR
 
