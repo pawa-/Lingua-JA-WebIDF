@@ -11,7 +11,7 @@ use JSON ();
 use Storable ();
 use TokyoCabinet;
 
-our $VERSION = '0.00_3';
+our $VERSION = '0.00_4';
 
 our $BING_API_URL          = 'http://api.bing.net/json.aspx';
 our $YAHOO_API_URL         = 'http://search.yahooapis.jp/WebSearchService/V2/webSearch';
