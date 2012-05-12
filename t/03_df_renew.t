@@ -39,7 +39,7 @@ $hdb->close or die( $hdb->errmsg($hdb->ecode) );
 
 my @patterns = (
     {
-        app      => 'Bing',
+        api      => 'Bing',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 1,
@@ -47,21 +47,21 @@ my @patterns = (
         hit      => 1000,
     },
     {
-        app      => 'Yahoo',
+        api      => 'Yahoo',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 0,
         hit      => 10000,
     },
     {
-        app      => 'Yahoo_Premium',
+        api      => 'Yahoo_Premium',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 1,
         hit      => 2270000,
     },
     {
-        app      => 'Bing',
+        api      => 'Bing',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 0,
@@ -69,21 +69,21 @@ my @patterns = (
         hit      => 1000,
     },
     {
-        app      => 'Yahoo',
+        api      => 'Yahoo',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 1,
         hit      => 2230000,
     },
     {
-        app      => 'Yahoo_Premium',
+        api      => 'Yahoo_Premium',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 1,
         hit      => 2230000,
     },
     {
-        app      => 'Bing',
+        api      => 'Bing',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 0,
@@ -91,7 +91,7 @@ my @patterns = (
         hit      => 100,
     },
     {
-        app      => 'Bing',
+        api      => 'Bing',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 1,
@@ -99,7 +99,7 @@ my @patterns = (
         hit      => 0,
     },
     {
-        app      => 'Bing',
+        api      => 'Bing',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 1,
@@ -107,7 +107,7 @@ my @patterns = (
         hit      => 100,
     },
     {
-        app        => 'Bing',
+        api        => 'Bing',
         driver     => 'TokyoCabinet',
         df_file    => 'df.tch',
         fetch_df   => 1,
@@ -116,7 +116,7 @@ my @patterns = (
         hit        => 100,
     },
     {
-        app        => 'Bing',
+        api        => 'Bing',
         driver     => 'TokyoCabinet',
         df_file    => 'df.tch',
         fetch_df   => 1,
@@ -125,7 +125,7 @@ my @patterns = (
         hit        => 0,
     },
     {
-        app      => 'Bing',
+        api      => 'Bing',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 1,
@@ -146,7 +146,7 @@ test_tcp(
         for my $pattern (@patterns)
         {
             my %config = (
-                app        => $pattern->{app},
+                api        => $pattern->{api},
                 appid      => 'test',
                 fetch_df   => $pattern->{fetch_df},
             );

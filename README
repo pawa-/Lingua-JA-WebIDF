@@ -6,7 +6,7 @@ SYNOPSIS
 
       my $webidf = Lingua::JA::WebIDF->new
       (
-          app       => 'Bing',
+          api       => 'Bing',
           appid     => $appid,
           driver    => 'Storable',
           df_file   => './df_bing.st',
@@ -32,7 +32,7 @@ METHOD
 
       KEY                 DEFAULT VALUE
       -----------         ---------------
-      app                 'Bing'
+      api                 'Bing'
       appid               undef
       driver              'Storable'
       df_file             './df_bing.st'
@@ -42,15 +42,18 @@ METHOD
       default_df          5000
       Furl_HTTP           undef
 
-    app => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
-        Uses the specified app when fetches WebDF(Document Frequency)
-        scores.
+    api => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
+        Uses the specified Web API when fetches WebDF(Document Frequency)
+        scores from the Web.
 
     driver => 'Storable' | 'TokyoCabinet'
         Fetches and saves WebDF scores with the specified driver.
 
     df_file
-        Specifies the saving path of WebDF scores.
+        Saves WebDF scores to the specified path.
+
+        I recommend that you change the file name depending on the value of
+        api.
 
     fech_df => 0
         Doesn't fetch WebDF scores. (If 0 is specified.)
@@ -59,7 +62,7 @@ METHOD
         Otherwise, the value of default_df is used.
 
     expires_in
-        If 365 is specified, The WebDF score is expires in 365 days after
+        If 365 is specified, The WebDF score expires in 365 days after
         fetches it.
 
     Furl_HTTP => HashRef
@@ -70,8 +73,8 @@ METHOD
   idf($word)
     Calculates the WebIDF score of $word.
 
-    If the WebDF score of $word is not saved, fetches it by using a Web API
-    you specified and saves it.
+    If the WebDF score of $word is not saved, fetches it by using the Web
+    API you specified and saves it.
 
   df($word)
     Fetches WebDF score of $word.

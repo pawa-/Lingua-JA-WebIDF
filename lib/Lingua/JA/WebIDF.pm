@@ -27,7 +27,7 @@ sub _options
         default_df    => 5000,
         expires_in    => 365, # number of days
         driver        => 'Storable',
-        app           => 'Bing',
+        api           => 'Bing',
         appid         => undef,
         Furl_HTTP     => undef,
     };
@@ -141,12 +141,12 @@ sub _fetch_new_df
 {
     my ($self, $word) = @_;
 
-    my $app  = $self->{app};
+    my $api  = $self->{api};
     my $furl = $self->{furl_http};
 
     my $df;
 
-    if ($app eq 'Bing')
+    if ($api eq 'Bing')
     {
         my $url = URI->new($BING_API_URL);
 
@@ -164,11 +164,11 @@ sub _fetch_new_df
             my $json = JSON::decode_json($body);
             $df = $json->{SearchResponse}{Web}{Total};
         }
-        else { Carp::carp("$app: $code $msg"); }
+        else { Carp::carp("$api: $code $msg"); }
     }
-    elsif ($app eq 'Yahoo' || $app eq 'Yahoo_Premium')
+    elsif ($api eq 'Yahoo' || $api eq 'Yahoo_Premium')
     {
-        my $url = ($app eq 'Yahoo')
+        my $url = ($api eq 'Yahoo')
                 ? URI->new($YAHOO_API_URL)
                 : URI->new($YAHOO_PREMIUM_API_URL)
                 ;
@@ -188,12 +188,12 @@ sub _fetch_new_df
             my $xml = $furl->get($url);
 
             if    ($xml =~ /totalResultsAvailable="([0-9]+)"/) { $df = $1; }
-            elsif ($xml =~ m|<Message>(.*?)</Message>|)        { Carp::carp("$app: $1"); }
-            else                                               { Carp::carp("$app: unknown response"); }
+            elsif ($xml =~ m|<Message>(.*?)</Message>|)        { Carp::carp("$api: $1"); }
+            else                                               { Carp::carp("$api: unknown response"); }
         }
-        else { Carp::carp("$app: $code $msg"); }
+        else { Carp::carp("$api: $code $msg"); }
     }
-    else { Carp::croak("Unknown app: $app"); }
+    else { Carp::croak("Unknown api: $api"); }
 
     return $df;
 }
@@ -245,7 +245,7 @@ my ($appid);
 
   my $webidf = Lingua::JA::WebIDF->new
   (
-      app       => 'Bing',
+      api       => 'Bing',
       appid     => $appid,
       driver    => 'Storable',
       df_file   => './df_bing.st',
@@ -274,7 +274,7 @@ The following key/value is used if you don't set key/value.
 
   KEY                 DEFAULT VALUE
   -----------         ---------------
-  app                 'Bing'
+  api                 'Bing'
   appid               undef
   driver              'Storable'
   df_file             './df_bing.st'
@@ -286,9 +286,10 @@ The following key/value is used if you don't set key/value.
 
 =over 4
 
-=item app => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
+=item api => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
 
-Uses the specified app when fetches WebDF(Document Frequency) scores.
+Uses the specified Web API when fetches WebDF(Document Frequency) scores
+from the Web.
 
 =item driver => 'Storable' | 'TokyoCabinet'
 
@@ -296,7 +297,9 @@ Fetches and saves WebDF scores with the specified driver.
 
 =item df_file
 
-Specifies the saving path of WebDF scores.
+Saves WebDF scores to the specified path.
+
+I recommend that you change the file name depending on the value of api.
 
 =item fech_df => 0
 
@@ -307,7 +310,7 @@ Otherwise, the value of default_df is used.
 
 =item expires_in
 
-If 365 is specified, The WebDF score is expires in 365 days after fetches it.
+If 365 is specified, The WebDF score expires in 365 days after fetches it.
 
 =item Furl_HTTP => HashRef
 
@@ -321,7 +324,7 @@ If you want to use proxy server, you have to use this option.
 
 Calculates the WebIDF score of $word.
 
-If the WebDF score of $word is not saved, fetches it by using a Web API
+If the WebDF score of $word is not saved, fetches it by using the Web API
 you specified and saves it.
 
 =head2 df($word)

@@ -14,28 +14,28 @@ unlink 'df.tch';
 
 my @patterns = (
     {
-        app       => 'Bing',
+        api       => 'Bing',
         driver    => 'Storable',
         df_file   => 'df.st',
         fetch_df  => 1,
         Furl_HTTP => { timeout => 2 },
     },
     {
-        app       => 'Yahoo',
+        api       => 'Yahoo',
         driver    => 'Storable',
         df_file   => 'df.st',
         fetch_df  => 1,
         Furl_HTTP => { timeout => 2 },
     },
     {
-        app       => 'Yahoo_Premium',
+        api       => 'Yahoo_Premium',
         driver    => 'TokyoCabinet',
         df_file   => 'df.tch',
         fetch_df  => 1,
         Furl_HTTP => { timeout => 2 },
     },
     {
-        app        => 'Bing',
+        api        => 'Bing',
         driver     => 'Storable',
         df_file    => 'df.st',
         fetch_df   => 1,
@@ -58,7 +58,7 @@ test_tcp(
         for my $pattern (@patterns)
         {
             my %config = (
-                app        => $pattern->{app},
+                api        => $pattern->{api},
                 driver     => $pattern->{driver},
                 df_file    => $pattern->{df_file},
                 appid      => 'test',

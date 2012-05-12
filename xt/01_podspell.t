@@ -10,5 +10,6 @@ pawapawa@cpan.org
 Lingua::JA::WebIDF
 WebDF
 API
+api
 Storable
 TokyoCabinet
