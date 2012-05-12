@@ -18,11 +18,11 @@ SYNOPSIS
       print $webidf->idf("スリジャヤワルダナプラコッテ"); # high
 
 DESCRIPTION
-    Lingua::JA::WebIDF calculates WebIDF.
+    Lingua::JA::WebIDF calculates WebIDF scores.
 
-    WebIDF(Inverse Document Frequency) represents the rarity of words on the
-    Web. The WebIDF of rare words is high. Conversely, the WebIDF of common
-    words is low.
+    WebIDF(Inverse Document Frequency) scores represent the rarity of words
+    on the Web. The WebIDF scores of rare words are high. Conversely, the
+    WebIDF scores of common words are low.
 
 METHOD
   new( [%config | \%config] )
@@ -43,20 +43,24 @@ METHOD
       Furl_HTTP           undef
 
     app => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
-        Uses the specified app when fetches WebDF(Document Frequency).
+        Uses the specified app when fetches WebDF(Document Frequency)
+        scores.
 
     driver => 'Storable' | 'TokyoCabinet'
-        Fetches and saves WebDF with the specified driver.
+        Fetches and saves WebDF scores with the specified driver.
+
+    df_file
+        Specifies the saving path of WebDF scores.
 
     fech_df => 0
-        Doesn't fetch WebDF. (If 0 is specified.)
+        Doesn't fetch WebDF scores. (If 0 is specified.)
 
-        If the WebDF you want to know is already saved, it is used.
+        If the WebDF score you want to know is already saved, it is used.
         Otherwise, default_df is used.
 
     expires_in
-        If 365 is specified, The WebDF is expires in 365 days after fetches
-        it.
+        If 365 is specified, The WebDF score is expires in 365 days after
+        fetches it.
 
     Furl_HTTP => HashRef
         Sets the options of Furl::HTTP->new.
@@ -64,22 +68,26 @@ METHOD
         If you want to use proxy server, you have to use this option.
 
   idf($word)
-    Calculates the WebIDF of $word.
+    Calculates the WebIDF score of $word.
 
-    If WebDF of $word is not saved, fetches it by using a Web API and saves
-    it.
+    If the WebDF score of $word is not saved, fetches it by using a Web API
+    and saves it.
 
   df($word)
-    Fetches WebDF of $word.
+    Fetches WebDF score of $word.
 
-    If WebDF of $word is not saved, fetches it by using a Web API and saves
-    it.
+    If the WebDF score of $word is not saved, fetches it by using a Web API
+    and saves it.
 
 AUTHOR
-    pawa- <pawapawa@cpan.org>
+    pawa <pawapawa@cpan.org>
 
 SEE ALSO
     Lingua::JA::TFIDF
+
+    <http://www.bing.com/toolbox/bingdeveloper/>
+
+    <http://developer.yahoo.co.jp/>
 
 LICENSE
     This library is free software; you can redistribute it and/or modify it

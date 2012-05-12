@@ -258,11 +258,11 @@ my ($appid);
 
 =head1 DESCRIPTION
 
-Lingua::JA::WebIDF calculates WebIDF.
+Lingua::JA::WebIDF calculates WebIDF scores.
 
-WebIDF(Inverse Document Frequency) represents the rarity of words on the Web.
-The WebIDF of rare words is high.
-Conversely, the WebIDF of common words is low.
+WebIDF(Inverse Document Frequency) scores represent the rarity of words on the Web.
+The WebIDF scores of rare words are high.
+Conversely, the WebIDF scores of common words are low.
 
 =head1 METHOD
 
@@ -288,22 +288,26 @@ The following key/value is used if you don't set key/value.
 
 =item app => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
 
-Uses the specified app when fetches WebDF(Document Frequency).
+Uses the specified app when fetches WebDF(Document Frequency) scores.
 
 =item driver => 'Storable' | 'TokyoCabinet'
 
-Fetches and saves WebDF with the specified driver.
+Fetches and saves WebDF scores with the specified driver.
+
+=item df_file
+
+Specifies the saving path of WebDF scores.
 
 =item fech_df => 0
 
-Doesn't fetch WebDF. (If 0 is specified.)
+Doesn't fetch WebDF scores. (If 0 is specified.)
 
-If the WebDF you want to know is already saved, it is used.
+If the WebDF score you want to know is already saved, it is used.
 Otherwise, default_df is used.
 
 =item expires_in
 
-If 365 is specified, The WebDF is expires in 365 days after fetches it.
+If 365 is specified, The WebDF score is expires in 365 days after fetches it.
 
 =item Furl_HTTP => HashRef
 
@@ -315,25 +319,30 @@ If you want to use proxy server, you have to use this option.
 
 =head2 idf($word)
 
-Calculates the WebIDF of $word.
+Calculates the WebIDF score of $word.
 
-If WebDF of $word is not saved, fetches it by using a Web API
+If the WebDF score of $word is not saved, fetches it by using a Web API
 and saves it.
 
 =head2 df($word)
 
-Fetches WebDF of $word.
+Fetches WebDF score of $word.
 
-If WebDF of $word is not saved, fetches it by using a Web API
+If the WebDF score of $word is not saved, fetches it by using a Web API
 and saves it.
 
 =head1 AUTHOR
 
-pawa- E<lt>pawapawa@cpan.orgE<gt>
+pawa E<lt>pawapawa@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
 L<Lingua::JA::TFIDF>
+
+L<http://www.bing.com/toolbox/bingdeveloper/>
+
+L<http://developer.yahoo.co.jp/>
+
 
 =head1 LICENSE
 
