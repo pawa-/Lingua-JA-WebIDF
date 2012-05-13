@@ -22,6 +22,7 @@ sub fetch_new_df
         'appid'    => $self->{appid},
         'query'    => qq|"$word"|,
         'type'     => 'all', # query type
+        'results'  => 1,
         'format'   => 'any', # file format
         'adult_ok' => 1,
     );
