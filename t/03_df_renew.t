@@ -7,10 +7,8 @@ use Test::Warn;
 use Test::TCP;
 use JSON;
 use Storable;
-use TokyoCabinet;
 use Encode qw/decode_utf8/;
-use Test::Requires qw/Plack::Builder Plack::Request Plack::Handler::Standalone/;
-
+use Test::Requires qw/Plack::Builder Plack::Request Plack::Handler::Standalone TokyoCabinet/;
 
 unlink 'df.st';
 unlink 'df.tch';

@@ -196,54 +196,56 @@ test_tcp(
             $config{driver}  = $pattern->{driver}  if exists $pattern->{driver};
             $config{df_file} = $pattern->{df_file} if exists $pattern->{df_file};
 
-            my $webidf;
+            subtest 'idf' => sub {
 
-            if (exists $pattern->{exception})
-            {
-                like(exception { $webidf = Lingua::JA::WebIDF->new(%config) }, qr/$pattern->{exception}/, 'exception');
-            }
-            else
-            {
-                $webidf = Lingua::JA::WebIDF->new(\%config);
-
-                my $query  = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
-
-                my ($df, $idf);
-
-                if (exists $pattern->{test_type})
+                if (exists $pattern->{driver} && $pattern->{driver} eq 'TokyoCabinet')
                 {
-                    %Lingua::JA::WebIDF::API_URL = (
-                        Bing         => "http://127.0.0.1:$port/404/",
-                        Yahoo        => "http://127.0.0.1:$port/404/",
-                        YahooPremium => "http://127.0.0.1:$port/404/",
-                    );
+                    eval { require TokyoCabinet; };
+
+                    plan 'skip_all' => 'TokyoCabinet is not installed' if $@;
                 }
 
-                if (exists $pattern->{warning})
+                my $webidf;
+
+                if (exists $pattern->{exception})
                 {
-                    warning_is { $df  = $webidf->df($query)  } $pattern->{warning}, 'df warning';
-                    warning_is { $idf = $webidf->idf($query) } $pattern->{warning}, 'idf warning';
+                    like(exception { $webidf = Lingua::JA::WebIDF->new(%config) }, qr/$pattern->{exception}/, 'exception');
                 }
                 else
                 {
-                    $df  = $webidf->df($query);
-                    $idf = $webidf->idf($query);
-                }
+                    $webidf = Lingua::JA::WebIDF->new(\%config);
 
-                if ($pattern->{fetch_df})
-                {
-                    if ($pattern->{warning} && !exists $pattern->{test_type})
+                    my $query  = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
+
+                    my ($df, $idf);
+
+                    if (exists $pattern->{test_type})
                     {
-                        is($df, $default_df, 'default df');
+                        %Lingua::JA::WebIDF::API_URL = (
+                            Bing         => "http://127.0.0.1:$port/404/",
+                            Yahoo        => "http://127.0.0.1:$port/404/",
+                            YahooPremium => "http://127.0.0.1:$port/404/",
+                        );
                     }
-                    else { isnt($df, $default_df, 'fetch_df'); }
+
+                    warning_is { $df  = $webidf->df($query)  } $pattern->{warning}, 'df warning';
+                    warning_is { $idf = $webidf->idf($query) } $pattern->{warning}, 'idf warning';
+
+                    if ($pattern->{fetch_df})
+                    {
+                        if ($pattern->{warning} && !exists $pattern->{test_type})
+                        {
+                            is($df, $default_df, 'default df');
+                        }
+                        else { isnt($df, $default_df, 'fetch_df'); }
+                    }
+                    else { is($df, $default_df, 'default df'); }
+
+                    $df = 1 if $df == 0; # To avoid dividing by zero.
+
+                    is( $idf, log($documents / $df), 'idf' );
                 }
-                else { is($df, $default_df, 'default df'); }
-
-                $df = 1 if $df == 0; # To avoid dividing by zero.
-
-                is( $idf, log($documents / $df), 'idf' );
-            }
+            };
         }
 
         unlink 'df.st';

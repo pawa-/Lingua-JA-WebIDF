@@ -69,21 +69,31 @@ test_tcp(
                 Furl_HTTP  => $pattern->{Furl_HTTP},
             );
 
-            my $webidf = Lingua::JA::WebIDF->new(%config);
+            subtest 'idf' => sub {
 
-            my $query = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
+                if ($pattern->{driver} eq 'TokyoCabinet')
+                {
+                    eval { require TokyoCabinet; };
 
-            my $df;
+                    plan 'skip_all' => 'TokyoCabinet is not installed' if $@;
+                }
 
-            if (!exists $pattern->{no_warning})
-            {
-                warning_like { $df = $webidf->df($query) } qr/timeout/, 'timeout';
-                is($df, $default_df, 'default df');
-            }
-            else
-            {
-                $df = $webidf->df($query);
-                isnt($df, $default_df, 'df');
+                my $webidf = Lingua::JA::WebIDF->new(%config);
+
+                my $query = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
+
+                my $df;
+
+                if (!exists $pattern->{no_warning})
+                {
+                    warning_like { $df = $webidf->df($query) } qr/timeout/, 'timeout';
+                    is($df, $default_df, 'default df');
+                }
+                else
+                {
+                    $df = $webidf->df($query);
+                    isnt($df, $default_df, 'df');
+                }
             }
         }
 
