@@ -69,7 +69,7 @@ test_tcp(
                 Furl_HTTP  => $pattern->{Furl_HTTP},
             );
 
-            subtest 'idf' => sub {
+            subtest 'timeout' => sub {
 
                 if ($pattern->{driver} eq 'TokyoCabinet')
                 {
@@ -94,7 +94,7 @@ test_tcp(
                     $df = $webidf->df($query);
                     isnt($df, $default_df, 'df');
                 }
-            }
+            };
         }
 
         unlink 'df.st';

@@ -67,6 +67,12 @@ sub idf
 {
     my ($self, $word) = @_;
 
+    if (!defined $word)
+    {
+        Carp::carp("Undefined word was set to idf method");
+        return;
+    }
+
     my $df = $self->df($word);
     my $N  = $self->{documents};
 
@@ -78,6 +84,12 @@ sub idf
 sub df
 {
     my ($self, $word) = @_;
+
+    if (!defined $word)
+    {
+        Carp::carp("Undefined word was set to df method");
+        return;
+    }
 
     my $df_and_time = $self->_fetch_df($word);
 
