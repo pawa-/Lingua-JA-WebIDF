@@ -8,8 +8,6 @@ SYNOPSIS
       (
           api       => 'Bing',
           appid     => $appid,
-          driver    => 'Storable',
-          df_file   => './df_bing.st',
           fetch_df  => 1,
           Furl_HTTP => { timeout => 3 }
       );
@@ -35,7 +33,7 @@ METHOD
       api                 'Bing'
       appid               undef
       driver              'Storable'
-      df_file             './df_bing.st'
+      df_file             undef
       fetch_df            1
       expires_in          365
       documents           250_0000_0000
@@ -51,6 +49,10 @@ METHOD
 
     df_file
         Saves WebDF scores to the specified path.
+
+        If undef is specified, 'bing_utf8.st' is used. This file is located
+        in 'Lingua/JA/WebIDF/' and contains the WebDF scores of about 60000
+        words. There are other format files in the same location.
 
         I recommend that you change the file name depending on the kind of
         Web API you specifies because WebDF may be different depending on

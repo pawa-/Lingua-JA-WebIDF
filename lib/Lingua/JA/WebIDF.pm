@@ -23,7 +23,7 @@ sub _options
 {
     return {
         documents     => 250_0000_0000,
-        df_file       => './df_bing.st',
+        df_file       => undef,
         fetch_df      => 1,
         default_df    => 5000,
         expires_in    => 365, # number of days
@@ -59,6 +59,15 @@ sub new
 
     Module::Load::load(__PACKAGE__ . '::API::' . $options->{api});
     Module::Load::load(__PACKAGE__ . '::Driver::' . $options->{driver});
+
+    if (!defined $options->{df_file})
+    {
+        my $path = $INC{ join( '/', split('::', __PACKAGE__) ) . '.pm' };
+        $path =~ s/\.pm$//;
+        $path .= '/bing_utf8.st';
+
+        $options->{df_file} = $path;
+    }
 
     bless $options, $class;
 }
@@ -167,8 +176,6 @@ my ($appid);
   (
       api       => 'Bing',
       appid     => $appid,
-      driver    => 'Storable',
-      df_file   => './df_bing.st',
       fetch_df  => 1,
       Furl_HTTP => { timeout => 3 }
   );
@@ -197,7 +204,7 @@ The following configuration is used if you don't set %config.
   api                 'Bing'
   appid               undef
   driver              'Storable'
-  df_file             './df_bing.st'
+  df_file             undef
   fetch_df            1
   expires_in          365
   documents           250_0000_0000
@@ -218,6 +225,11 @@ Fetches and saves WebDF scores with the specified driver.
 =item df_file
 
 Saves WebDF scores to the specified path.
+
+If undef is specified, 'bing_utf8.st' is used.
+This file is located in 'Lingua/JA/WebIDF/'
+and contains the WebDF scores of about 60000 words.
+There are other format files in the same location.
 
 I recommend that you change the file name depending on the kind of Web API
 you specifies because WebDF may be different depending on Web API.
