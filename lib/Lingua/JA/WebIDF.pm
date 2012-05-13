@@ -5,18 +5,19 @@ use strict;
 use warnings;
 
 use Carp ();
-use URI;
+use Module::Load ();
 use Furl::HTTP;
-use JSON ();
-use Storable ();
-use TokyoCabinet;
 
 our $VERSION = '0.00_4';
 
-our $BING_API_URL          = 'http://api.bing.net/json.aspx';
-our $YAHOO_API_URL         = 'http://search.yahooapis.jp/WebSearchService/V2/webSearch';
-our $YAHOO_PREMIUM_API_URL = 'http://search.yahooapis.jp/PremiumWebSearchService/V1/webSearch';
+our %API_URL = (
+    Bing         => 'http://api.bing.net/json.aspx',
+    Yahoo        => 'http://search.yahooapis.jp/WebSearchService/V2/webSearch',
+    YahooPremium => 'http://search.yahooapis.jp/PremiumWebSearchService/V1/webSearch',
+);
 
+my @SUPPORTED_API    = keys %API_URL;
+my @SUPPORTED_DRIVER = qw/Storable TokyoCabinet/;
 
 sub _options
 {
@@ -46,14 +47,18 @@ sub new
         else                          { $options->{$key} = $args{$key}; }
     }
 
-    Carp::croak('appid is needed') unless length $options->{appid};
-
+    Carp::croak('appid is needed')                   unless length $options->{appid};
+    Carp::croak("Unknown driver $options->{driver}") unless grep { $options->{driver} eq $_ } @SUPPORTED_DRIVER;
+    Carp::croak("Unknown api $options->{api}")       unless grep { $options->{api}    eq $_ } @SUPPORTED_API;
 
     if (defined $options->{Furl_HTTP})
     {
         $options->{furl_http} = Furl::HTTP->new($options->{Furl_HTTP});
     }
     else { $options->{furl_http} = Furl::HTTP->new; }
+
+    Module::Load::load(__PACKAGE__ . '::API::' . $options->{api});
+    Module::Load::load(__PACKAGE__ . '::Driver::' . $options->{driver});
 
     bless $options, $class;
 }
@@ -74,13 +79,7 @@ sub df
 {
     my ($self, $word) = @_;
 
-    my $driver = $self->{driver};
-
-    my $df_and_time;
-
-    if    ($driver eq 'Storable')     { $df_and_time = $self->_fetch_df_Storable($word); }
-    elsif ($driver eq 'TokyoCabinet') { $df_and_time = $self->_fetch_df_TokyoCabinet($word); }
-    else                              { Carp::croak("Unknown driver: $driver"); }
+    my $df_and_time = $self->_fetch_df($word);
 
     my ($df, $time, $elapsed_time);
 
@@ -107,124 +106,33 @@ sub df
     return $df;
 }
 
-sub _fetch_df_Storable
+sub _fetch_df
 {
     my ($self, $word) = @_;
 
-    if (!exists $self->{df} && -s $self->{df_file})
-    {
-        $self->{df} = Storable::lock_retrieve($self->{df_file});
-    }
-
-    my $df = $self->{df};
-
-    return $df->{$word};
-}
-
-sub _fetch_df_TokyoCabinet
-{
-    my ($self, $word) = @_;
-
-    my $hdb = TokyoCabinet::HDB->new;
-
-    $hdb->open($self->{df_file}, $hdb->OWRITER | $hdb->OCREAT)
-        or Carp::croak( $hdb->errmsg($hdb->ecode) );
-
-    my $df = $hdb->get($word); # or Carp::carp( $hdb->errmsg($hdb->ecode) );
-
-    $hdb->close or Carp::croak( $hdb->errmsg($hdb->ecode) );
-
-    return $df;
-}
-
-sub _fetch_new_df
-{
-    my ($self, $word) = @_;
-
-    my $api  = $self->{api};
-    my $furl = $self->{furl_http};
-
-    my $df;
-
-    if ($api eq 'Bing')
-    {
-        my $url = URI->new($BING_API_URL);
-
-        $url->query_form(
-            'Appid'     => $self->{appid},
-            'query'     => qq|"$word"|,
-            'sources'   => 'web',
-            'web.count' => 1,
-        );
-
-        my (undef, $code, $msg, undef, $body) = $furl->get($url);
-
-        if ($code == 200)
-        {
-            my $json = JSON::decode_json($body);
-            $df = $json->{SearchResponse}{Web}{Total};
-        }
-        else { Carp::carp("$api: $code $msg"); }
-    }
-    elsif ($api eq 'Yahoo' || $api eq 'Yahoo_Premium')
-    {
-        my $url = ($api eq 'Yahoo')
-                ? URI->new($YAHOO_API_URL)
-                : URI->new($YAHOO_PREMIUM_API_URL)
-                ;
-
-        $url->query_form(
-            'appid'    => $self->{appid},
-            'query'    => qq|"$word"|,
-            'type'     => 'all', # query type
-            'format'   => 'any', # file format
-            'adult_ok' => 1,
-        );
-
-        my (undef, $code, $msg, undef, $body) = $furl->get($url);
-
-        if ($code == 200)
-        {
-            my $xml = $furl->get($url);
-
-            if    ($xml =~ /totalResultsAvailable="([0-9]+)"/) { $df = $1; }
-            elsif ($xml =~ m|<Message>(.*?)</Message>|)        { Carp::carp("$api: $1"); }
-            else                                               { Carp::carp("$api: unknown response"); }
-        }
-        else { Carp::carp("$api: $code $msg"); }
-    }
-    else { Carp::croak("Unknown api: $api"); }
-
-    return $df;
+    no strict 'refs';
+    my $driver = __PACKAGE__ . '::Driver::' . $self->{driver};
+    &{$driver . '::fetch_df'}($self, $word);
 }
 
 sub _save_df
 {
     my ($self, $word, $df) = @_;
 
-    my $driver      = $self->{driver};
     my $df_and_time = $df . "\t" . time;
 
-    if ($driver eq 'Storable')
-    {
-        my $df_ref = $self->{df};
-        $df_ref->{$word} = $df_and_time;
+    no strict 'refs';
+    my $driver = __PACKAGE__ . '::Driver::' . $self->{driver};
+    &{$driver . '::save_df'}($self, $word, $df_and_time);
+}
 
-        Storable::lock_nstore($df_ref, $self->{df_file})
-            or Carp::croak("Can't store df data to $self->{df_file}");
-    }
-    elsif ($driver eq 'TokyoCabinet')
-    {
-        my $hdb = TokyoCabinet::HDB->new;
+sub _fetch_new_df
+{
+    my ($self, $word) = @_;
 
-        $hdb->open($self->{df_file}, $hdb->OWRITER | $hdb->OCREAT)
-            or Carp::croak( $hdb->errmsg($hdb->ecode) );
-
-        # If a record with the same key exists in the database, it is overwritten.
-        $hdb->put($word, $df_and_time) or Carp::carp( $hdb->errmsg($hdb->ecode) );
-
-        $hdb->close or Carp::croak( $hdb->errmsg($hdb->ecode) );
-    }
+    no strict 'refs';
+    my $api = __PACKAGE__ . '::API::' . $self->{api};
+    &{$api . '::fetch_new_df'}( $self, $word, $API_URL{ $self->{api} } );
 }
 
 1;
@@ -286,7 +194,7 @@ The following configuration is used if you don't set %config.
 
 =over 4
 
-=item api => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
+=item api => 'Bing' | 'Yahoo' | 'YahooPremium'
 
 Uses the specified Web API when fetches WebDF(Document Frequency) scores
 from the Web.

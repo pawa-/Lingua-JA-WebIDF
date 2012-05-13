@@ -28,7 +28,7 @@ my @patterns = (
         Furl_HTTP => { timeout => 2 },
     },
     {
-        api       => 'Yahoo_Premium',
+        api       => 'YahooPremium',
         driver    => 'TokyoCabinet',
         df_file   => 'df.tch',
         fetch_df  => 1,
@@ -49,9 +49,11 @@ test_tcp(
     client => sub {
         my $port = shift;
 
-        local $Lingua::JA::WebIDF::BING_API_URL          = "http://127.0.0.1:$port/bing/";
-        local $Lingua::JA::WebIDF::YAHOO_API_URL         = "http://127.0.0.1:$port/yahoo/";
-        local $Lingua::JA::WebIDF::YAHOO_PREMIUM_API_URL = "http://127.0.0.1:$port/yahoo_premium/";
+        local %Lingua::JA::WebIDF::API_URL = (
+            Bing         => "http://127.0.0.1:$port/bing/",
+            Yahoo        => "http://127.0.0.1:$port/yahoo/",
+            YahooPremium => "http://127.0.0.1:$port/yahoo_premium/",
+        );
 
         my $default_df = 1_0000;
 

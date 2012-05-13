@@ -42,7 +42,7 @@ my @patterns = (
         fetch_df => 0,
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 0,
@@ -60,7 +60,7 @@ my @patterns = (
         fetch_df => 0,
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 0,
@@ -78,7 +78,7 @@ my @patterns = (
         fetch_df => 1,
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 1,
@@ -96,7 +96,7 @@ my @patterns = (
         fetch_df => 1,
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 1,
@@ -135,21 +135,21 @@ my @patterns = (
         query    => 'コジョピー', # no hit
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         df_file  => 'df.st',
         fetch_df => 1,
         query    => '500',
-        warning  => 'Yahoo_Premium: 500 Internal Server Error',
+        warning  => 'YahooPremium: 500 Internal Server Error',
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         df_file  => 'df.st',
         fetch_df => 1,
         query    => 'unavailable',
-        warning  => 'Yahoo_Premium: Service unavailable.Too many users',
+        warning  => 'YahooPremium: Service unavailable.Too many users',
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         df_file  => 'df.st',
         fetch_df => 1,
         query    => 'コジョピー', # no hit
@@ -174,9 +174,11 @@ test_tcp(
     client => sub {
         my $port = shift;
 
-        local $Lingua::JA::WebIDF::BING_API_URL          = "http://127.0.0.1:$port/bing/";
-        local $Lingua::JA::WebIDF::YAHOO_API_URL         = "http://127.0.0.1:$port/yahoo/";
-        local $Lingua::JA::WebIDF::YAHOO_PREMIUM_API_URL = "http://127.0.0.1:$port/yahoo_premium/";
+        local %Lingua::JA::WebIDF::API_URL = (
+            Bing         => "http://127.0.0.1:$port/bing/",
+            Yahoo        => "http://127.0.0.1:$port/yahoo/",
+            YahooPremium => "http://127.0.0.1:$port/yahoo_premium/",
+        );
 
         my $documents  = 300_0000_0000;
         my $default_df = 150_0000_0000;
@@ -194,23 +196,27 @@ test_tcp(
             $config{driver}  = $pattern->{driver}  if exists $pattern->{driver};
             $config{df_file} = $pattern->{df_file} if exists $pattern->{df_file};
 
-            my $webidf = Lingua::JA::WebIDF->new(%config);
-
-            my $query  = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
+            my $webidf;
 
             if (exists $pattern->{exception})
             {
-                like(exception { $webidf->idf($query) }, qr/$pattern->{exception}/, 'exception');
+                like(exception { $webidf = Lingua::JA::WebIDF->new(%config) }, qr/$pattern->{exception}/, 'exception');
             }
             else
             {
+                $webidf = Lingua::JA::WebIDF->new(\%config);
+
+                my $query  = exists $pattern->{query} ? $pattern->{query} : 'オコジョ';
+
                 my ($df, $idf);
 
                 if (exists $pattern->{test_type})
                 {
-                    $Lingua::JA::WebIDF::BING_API_URL          = "http://127.0.0.1:$port/404/";
-                    $Lingua::JA::WebIDF::YAHOO_API_URL         = "http://127.0.0.1:$port/404/";
-                    $Lingua::JA::WebIDF::YAHOO_PREMIUM_API_URL = "http://127.0.0.1:$port/404/";
+                    %Lingua::JA::WebIDF::API_URL = (
+                        Bing         => "http://127.0.0.1:$port/404/",
+                        Yahoo        => "http://127.0.0.1:$port/404/",
+                        YahooPremium => "http://127.0.0.1:$port/404/",
+                    );
                 }
 
                 if (exists $pattern->{warning})

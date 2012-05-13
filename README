@@ -42,7 +42,7 @@ METHOD
       default_df          5000
       Furl_HTTP           undef
 
-    api => 'Bing' | 'Yahoo' | 'Yahoo_Premium'
+    api => 'Bing' | 'Yahoo' | 'YahooPremium'
         Uses the specified Web API when fetches WebDF(Document Frequency)
         scores from the Web.
 

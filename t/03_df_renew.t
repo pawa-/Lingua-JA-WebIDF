@@ -54,7 +54,7 @@ my @patterns = (
         hit      => 10000,
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         driver   => 'Storable',
         df_file  => 'df.st',
         fetch_df => 1,
@@ -76,7 +76,7 @@ my @patterns = (
         hit      => 2230000,
     },
     {
-        api      => 'Yahoo_Premium',
+        api      => 'YahooPremium',
         driver   => 'TokyoCabinet',
         df_file  => 'df.tch',
         fetch_df => 1,
@@ -139,9 +139,11 @@ test_tcp(
     client => sub {
         my $port = shift;
 
-        local $Lingua::JA::WebIDF::BING_API_URL          = "http://127.0.0.1:$port/bing/";
-        local $Lingua::JA::WebIDF::YAHOO_API_URL         = "http://127.0.0.1:$port/yahoo/";
-        local $Lingua::JA::WebIDF::YAHOO_PREMIUM_API_URL = "http://127.0.0.1:$port/yahoo_premium/";
+        local %Lingua::JA::WebIDF::API_URL = (
+            Bing         => "http://127.0.0.1:$port/bing/",
+            Yahoo        => "http://127.0.0.1:$port/yahoo/",
+            YahooPremium => "http://127.0.0.1:$port/yahoo_premium/",
+        );
 
         for my $pattern (@patterns)
         {

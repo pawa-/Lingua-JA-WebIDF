@@ -13,3 +13,4 @@ API
 api
 Storable
 TokyoCabinet
+YahooPremium

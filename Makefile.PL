@@ -4,6 +4,7 @@ name     'Lingua-JA-WebIDF';
 all_from 'lib/Lingua/JA/WebIDF.pm';
 
 requires 'Carp';
+requires 'Module::Load';
 requires 'URI';
 requires 'Furl::HTTP';
 requires 'JSON';
@@ -22,7 +23,7 @@ author_tests 'xt';
 readme_from 'lib/Lingua/JA/WebIDF.pm';
 
 resources(
-    license => 'http://dev.perl.org/licenses',
+    license    => 'http://dev.perl.org/licenses',
     repository => 'https://github.com/pawa-/Lingua-JA-WebIDF',
     bugtracker => 'https://github.com/pawa-/Lingua-JA-WebIDF/issues',
 );
