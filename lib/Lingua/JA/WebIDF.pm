@@ -47,9 +47,9 @@ sub new
         else                          { $options->{$key} = $args{$key}; }
     }
 
-    Carp::croak('appid is needed')                   unless length $options->{appid};
-    Carp::croak("Unknown driver $options->{driver}") unless grep { $options->{driver} eq $_ } @SUPPORTED_DRIVER;
-    Carp::croak("Unknown api $options->{api}")       unless grep { $options->{api}    eq $_ } @SUPPORTED_API;
+    Carp::croak('appid is needed')                    unless length $options->{appid};
+    Carp::croak("Unknown driver: $options->{driver}") unless grep { $options->{driver} eq $_ } @SUPPORTED_DRIVER;
+    Carp::croak("Unknown api: $options->{api}")       unless grep { $options->{api}    eq $_ } @SUPPORTED_API;
 
     if (defined $options->{Furl_HTTP})
     {
