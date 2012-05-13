@@ -25,11 +25,13 @@ sub save_df
 {
     my ($self, $word, $df_and_time) = @_;
 
-    my $df_ref = $self->{df};
+    my $df_ref  = $self->{df};
+    my $df_file = $self->{df_file};
+
     $df_ref->{$word} = $df_and_time;
 
     Storable::lock_nstore($df_ref, $self->{df_file})
-        or Carp::croak("Can't store df data to $self->{df_file}");
+        or Carp::croak("Storable: can't store df data to $df_file");
 }
 
 1;
