@@ -23,7 +23,7 @@ DESCRIPTION
     WebIDF scores of common words are low.
 
 METHOD
-  new( [%config | \%config] )
+  new( %config || \%config )
     Creates a new Lingua::JA::WebIDF instance.
 
     The following configuration is used if you don't set %config.
@@ -40,14 +40,14 @@ METHOD
       default_df          5000
       Furl_HTTP           undef
 
-    api => 'Bing' | 'Yahoo' | 'YahooPremium'
+    api => 'Bing' || 'Yahoo' || 'YahooPremium'
         Uses the specified Web API when fetches WebDF(Document Frequency)
         scores from the Web.
 
-    driver => 'Storable' | 'TokyoCabinet'
+    driver => 'Storable' || 'TokyoCabinet'
         Fetches and saves WebDF scores with the specified driver.
 
-    df_file
+    df_file => $path
         Saves WebDF scores to the specified path.
 
         If undef is specified, 'bing_utf8.st' is used. This file is located
@@ -64,11 +64,11 @@ METHOD
         If the WebDF score you want to know is already saved, it is used.
         Otherwise, the value of default_df is used.
 
-    expires_in
+    expires_in => $days
         If 365 is specified, The WebDF score expires in 365 days after
         fetches it.
 
-    Furl_HTTP => HashRef
+    Furl_HTTP => \%option
         Sets the options of Furl::HTTP->new.
 
         If you want to use proxy server, you have to use this option.

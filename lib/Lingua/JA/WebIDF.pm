@@ -193,7 +193,7 @@ Conversely, the WebIDF scores of common words are low.
 
 =head1 METHOD
 
-=head2 new( [%config | \%config] )
+=head2 new( %config || \%config )
 
 Creates a new Lingua::JA::WebIDF instance.
 
@@ -213,16 +213,16 @@ The following configuration is used if you don't set %config.
 
 =over 4
 
-=item api => 'Bing' | 'Yahoo' | 'YahooPremium'
+=item api => 'Bing' || 'Yahoo' || 'YahooPremium'
 
 Uses the specified Web API when fetches WebDF(Document Frequency) scores
 from the Web.
 
-=item driver => 'Storable' | 'TokyoCabinet'
+=item driver => 'Storable' || 'TokyoCabinet'
 
 Fetches and saves WebDF scores with the specified driver.
 
-=item df_file
+=item df_file => $path
 
 Saves WebDF scores to the specified path.
 
@@ -241,11 +241,11 @@ Doesn't fetch WebDF scores. (If 0 is specified.)
 If the WebDF score you want to know is already saved, it is used.
 Otherwise, the value of default_df is used.
 
-=item expires_in
+=item expires_in => $days
 
 If 365 is specified, The WebDF score expires in 365 days after fetches it.
 
-=item Furl_HTTP => HashRef
+=item Furl_HTTP => \%option
 
 Sets the options of L<Furl::HTTP>->new.
 
