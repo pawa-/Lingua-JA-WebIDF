@@ -17,7 +17,7 @@ isa_ok($webidf, 'Lingua::JA::WebIDF');
 my $score;
 
 warning_is { $score = $webidf->df }
-'Undefined word was set to df method', 'df: Undefined word';
+'Undefined word was set to df method', 'df: undefined word';
 is($score, undef);
 
 warning_is { $score = $webidf->idf }

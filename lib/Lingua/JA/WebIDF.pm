@@ -8,7 +8,7 @@ use Carp ();
 use Module::Load ();
 use Furl::HTTP;
 
-our $VERSION = '0.00_9';
+our $VERSION = '0.01';
 
 our %API_URL = (
     Bing         => 'http://api.bing.net/json.aspx',
@@ -231,8 +231,8 @@ This file is located in 'Lingua/JA/WebIDF/'
 and contains the WebDF scores of about 60000 words.
 There are other format files in the 'df' directory of this library.
 
-I recommend that you change the file name depending on the kind of Web API
-you specifies because WebDF may be different depending on Web API.
+I recommend that you change the file depending on the type of Web API
+you specifies because WebDF may be different depending on it.
 
 =item fech_df => 0
 
@@ -243,7 +243,7 @@ Otherwise, the value of default_df is used.
 
 =item expires_in => $days
 
-If 365 is specified, The WebDF score expires in 365 days after fetches it.
+If 365 is specified, a WebDF score expires in 365 days after fetches it.
 
 =item Furl_HTTP => \%option
 
