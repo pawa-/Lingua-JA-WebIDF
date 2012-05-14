@@ -279,6 +279,7 @@ L<http://www.bing.com/toolbox/bingdeveloper/>
 
 L<http://developer.yahoo.co.jp/>
 
+L<http://fallabs.com/tokyocabinet/>
 
 =head1 LICENSE
 
