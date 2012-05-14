@@ -8,7 +8,7 @@ use Carp ();
 use Module::Load ();
 use Furl::HTTP;
 
-our $VERSION = '0.00_8';
+our $VERSION = '0.00_9';
 
 our %API_URL = (
     Bing         => 'http://api.bing.net/json.aspx',
