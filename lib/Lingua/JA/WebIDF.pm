@@ -8,7 +8,7 @@ use Carp ();
 use Module::Load ();
 use Furl::HTTP;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my @SUPPORTED_API    = _plugin_list('API');
 my @SUPPORTED_DRIVER = _plugin_list('Driver');
