@@ -229,7 +229,7 @@ Saves WebDF scores to the specified path.
 If undef is specified, 'bing_utf8.st' is used.
 This file is located in 'Lingua/JA/WebIDF/'
 and contains the WebDF scores of about 60000 words.
-There are other format files in the same location.
+There are other format files in the 'df' directory of this library.
 
 I recommend that you change the file name depending on the kind of Web API
 you specifies because WebDF may be different depending on Web API.
