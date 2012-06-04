@@ -6,7 +6,7 @@ SYNOPSIS
 
       my $webidf = Lingua::JA::WebIDF->new
       (
-          api       => 'Bing',
+          api       => 'Yahoo',
           appid     => $appid,
           fetch_df  => 1,
           Furl_HTTP => { timeout => 3 }
@@ -30,7 +30,7 @@ METHOD
 
       KEY                 DEFAULT VALUE
       -----------         ---------------
-      api                 'Bing'
+      api                 'Yahoo'
       appid               undef
       driver              'Storable'
       df_file             undef
@@ -91,11 +91,11 @@ AUTHOR
 SEE ALSO
     Lingua::JA::TFIDF
 
-    <http://www.bing.com/toolbox/bingdeveloper/>
+    Bing API: <http://www.bing.com/toolbox/bingdeveloper/>
 
-    <http://developer.yahoo.co.jp/>
+    Yahoo API: <http://developer.yahoo.co.jp/>
 
-    <http://fallabs.com/tokyocabinet/>
+    Tokyo Cabinet: <http://fallabs.com/tokyocabinet/>
 
 LICENSE
     This library is free software; you can redistribute it and/or modify it

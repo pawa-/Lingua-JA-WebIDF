@@ -8,7 +8,10 @@ use Carp ();
 use Module::Load ();
 use Furl::HTTP;
 
-our $VERSION = '0.02';
+our $VERSION = '0.10';
+
+my $PM_PATH = $INC{ join( '/', split('::', __PACKAGE__) ) . '.pm' };
+$PM_PATH =~ s/\.pm$//;
 
 my @SUPPORTED_API    = _plugin_list('API');
 my @SUPPORTED_DRIVER = _plugin_list('Driver');
@@ -17,13 +20,14 @@ my @SUPPORTED_DRIVER = _plugin_list('Driver');
 sub _options
 {
     return {
+        idf_type      => 1,
         documents     => 250_0000_0000,
         df_file       => undef,
         fetch_df      => 1,
         default_df    => 5000,
         expires_in    => 365, # number of days
         driver        => 'Storable',
-        api           => 'Bing',
+        api           => 'Yahoo',
         appid         => undef,
         Furl_HTTP     => undef,
     };
@@ -39,12 +43,13 @@ sub new
     for my $key (keys %args)
     {
         if (!exists $options->{$key}) { Carp::croak("Unknown option: $key"); }
-        else                          { $options->{$key} = $args{$key}; }
+        else                          { $options->{$key} = $args{$key};      }
     }
 
-    Carp::croak('appid is needed')                    unless defined $options->{appid};
-    Carp::croak("Unknown driver: $options->{driver}") unless grep { $options->{driver} eq $_ } @SUPPORTED_DRIVER;
-    Carp::croak("Unknown api: $options->{api}")       unless grep { $options->{api}    eq $_ } @SUPPORTED_API;
+    Carp::croak('appid is needed')                        unless defined $options->{appid};
+    Carp::croak("Unknown driver: $options->{driver}")     unless grep { $options->{driver} eq $_   } @SUPPORTED_DRIVER;
+    Carp::croak("Unknown api: $options->{api}")           unless grep { $options->{api}    eq $_   } @SUPPORTED_API;
+    Carp::croak("Unknown idf type: $options->{idf_type}") unless grep { $options->{idf_type} eq $_ } 1 .. 3;
 
     if (defined $options->{Furl_HTTP})
     {
@@ -55,14 +60,7 @@ sub new
     Module::Load::load(__PACKAGE__ . '::API::' . $options->{api});
     Module::Load::load(__PACKAGE__ . '::Driver::' . $options->{driver});
 
-    if (!defined $options->{df_file})
-    {
-        my $path = $INC{ join( '/', split('::', __PACKAGE__) ) . '.pm' };
-        $path =~ s/\.pm$//;
-        $path .= '/bing_utf8.st';
-
-        $options->{df_file} = $path;
-    }
+    $options->{df_file} = "$PM_PATH/yahoo_utf8.st" unless defined $options->{df_file};
 
     bless $options, $class;
 }
@@ -73,16 +71,26 @@ sub idf
 
     if (!defined $word)
     {
-        Carp::carp("Undefined word was set to idf method");
+        Carp::carp("Undefined word has been set to idf method");
         return;
     }
 
-    my $df = $self->df($word);
-    my $N  = $self->{documents};
+    my $df   = $self->df($word);
+    my $N    = $self->{documents};
+    my $type = $self->{idf_type};
 
-    $df = 1 if $df == 0; # To avoid dividing by zero
+    my $idf;
 
-    return log($N / $df);
+    if ($type == 1)
+    {
+        $df = 1 if $df == 0; # To avoid dividing by zero
+        $idf = log($N / $df);
+    }
+    elsif ($type == 2) { $idf = log( ($N - $df + 0.5) / ($df + 0.5) ); }
+    elsif ($type == 3) { $idf = log( ($N + 0.5) / ($df + 0.5) ); }
+    else               { Crap::croak("Unknown idf_type: $type"); }
+
+    return $idf;
 }
 
 sub df
@@ -91,7 +99,7 @@ sub df
 
     if (!defined $word)
     {
-        Carp::carp("Undefined word was set to df method");
+        Carp::carp("Undefined word has been set to df method");
         return;
     }
 
@@ -148,17 +156,14 @@ sub _fetch_new_df
 
     no strict 'refs';
     my $api = __PACKAGE__ . '::API::' . $self->{api};
-    &{$api . '::fetch_new_df'}($self, $word);
+    &{$api . '::fetch_new_df'}($word, $self->{furl_http}, $self->{appid});
 }
 
 sub _plugin_list
 {
     my $type = shift;
 
-    my $path = $INC{ join( '/', split('::', __PACKAGE__) ) . '.pm' };
-    $path =~ s/\.pm$//;
-
-    my $dir = "$path/$type/";
+    my $dir = "$PM_PATH/$type/";
 
     opendir(my $dh, $dir) or Carp::croak("Can't open $dir: $!");
     my @contents = readdir $dh;
@@ -188,7 +193,7 @@ my ($appid);
 
   my $webidf = Lingua::JA::WebIDF->new
   (
-      api       => 'Bing',
+      api       => 'Yahoo',
       appid     => $appid,
       fetch_df  => 1,
       Furl_HTTP => { timeout => 3 }
@@ -215,7 +220,7 @@ The following configuration is used if you don't set %config.
 
   KEY                 DEFAULT VALUE
   -----------         ---------------
-  api                 'Bing'
+  api                 'Yahoo'
   appid               undef
   driver              'Storable'
   df_file             undef
@@ -289,11 +294,11 @@ pawa E<lt>pawapawa@cpan.orgE<gt>
 
 L<Lingua::JA::TFIDF>
 
-L<http://www.bing.com/toolbox/bingdeveloper/>
+Bing API: L<http://www.bing.com/toolbox/bingdeveloper/>
 
-L<http://developer.yahoo.co.jp/>
+Yahoo API: L<http://developer.yahoo.co.jp/>
 
-L<http://fallabs.com/tokyocabinet/>
+Tokyo Cabinet: L<http://fallabs.com/tokyocabinet/>
 
 =head1 LICENSE
 
