@@ -268,11 +268,11 @@ test_tcp(
                     }
                     elsif ($pattern->{idf_type} == 2)
                     {
-                        is( $idf, log( ($documents - $df + 0.5) / ($df + 0.5) ), 'idf_type2');
+                        is( $idf, log( ($documents - $df + 0.5) / ($df + 0.5) ), 'idf_type2' );
                     }
                     elsif ($pattern->{idf_type} == 3)
                     {
-                        is( $idf, log( ($documents + 0.5) / ($df + 0.5) ), 'idf_type3');
+                        is( $idf, log( ($documents + 0.5) / ($df + 0.5) ), 'idf_type3' );
                     }
                 }
             };

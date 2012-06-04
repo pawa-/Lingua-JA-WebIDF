@@ -23,7 +23,7 @@ DESCRIPTION
     WebIDF scores of common words are low.
 
     IDF is based on the intuition that a query term which occurs in many
-    documents is not a good discriminator, and should be given less weight
+    documents is not a good discriminator and should be given less weight
     than one which occurs in few documents.
 
 METHOD
@@ -68,7 +68,7 @@ METHOD
           w_i = log -----------  (3)
                      n_i + 0.5
 
-    api => 'Bing' || 'Yahoo' || 'YahooPremium'
+    api => 'Yahoo' || 'YahooPremium' || 'Bing'
         Uses the specified Web API when fetches WebDF(Document Frequency)
         scores from the Web.
 
@@ -78,7 +78,7 @@ METHOD
     df_file => $path
         Saves WebDF scores to the specified path.
 
-        If undef is specified, 'bing_utf8.st' is used. This file is located
+        If undef is specified, 'yahoo_utf8.st' is used. This file is located
         in 'Lingua/JA/WebIDF/' and contains the WebDF scores of about 60000
         words. There are other format files in the 'df' directory of this
         library.
