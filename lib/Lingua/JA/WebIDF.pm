@@ -210,6 +210,10 @@ WebIDF(Inverse Document Frequency) scores represent the rarity of words on the W
 The WebIDF scores of rare words are high.
 Conversely, the WebIDF scores of common words are low.
 
+IDF is based on the intuition that a query term which occurs in
+many documents is not a good discriminator and should be given less weight
+than one which occurs in few documents.
+
 =head1 METHOD
 
 =head2 new( %config || \%config )
@@ -220,6 +224,7 @@ The following configuration is used if you don't set %config.
 
   KEY                 DEFAULT VALUE
   -----------         ---------------
+  idf_type            1
   api                 'Yahoo'
   appid               undef
   driver              'Storable'
@@ -231,6 +236,32 @@ The following configuration is used if you don't set %config.
   Furl_HTTP           undef
 
 =over 4
+
+=item idf_type => 1 || 2 || 3
+
+The type1 is the most commonly cited form of IDF.
+
+                   N
+  idf(t_i) = log -----  (1)
+                  n_i
+
+  N  : the number of documents
+  n_i: the number of documents which contain term t_i
+  t_i: term
+
+
+The type2 is a simple version of the RSJ weight.
+
+              N - n_i + 0.5
+  w_i = log ----------------  (2)
+               n_i + 0.5
+
+
+The type3 is a modification of (2).
+
+              N + 0.5
+  w_i = log -----------  (3)
+             n_i + 0.5
 
 =item api => 'Bing' || 'Yahoo' || 'YahooPremium'
 
@@ -299,6 +330,10 @@ Bing API: L<http://www.bing.com/toolbox/bingdeveloper/>
 Yahoo API: L<http://developer.yahoo.co.jp/>
 
 Tokyo Cabinet: L<http://fallabs.com/tokyocabinet/>
+
+S. Robertson, Understanding inverse document frequency:
+on theoretical arguments for IDF.
+Journal of Documentation 60, 503-520, 2004.
 
 =head1 LICENSE
 
