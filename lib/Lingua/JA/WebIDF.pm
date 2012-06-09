@@ -214,7 +214,7 @@ IDF is based on the intuition that a query term which occurs in
 many documents is not a good discriminator and should be given less weight
 than one which occurs in few documents.
 
-=head1 METHOD
+=head1 METHODS
 
 =head2 new( %config || \%config )
 
@@ -323,7 +323,7 @@ pawa E<lt>pawapawa@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-L<Lingua::JA::TFIDF>
+L<Lingua::JA::TFWebIDF>
 
 Bing API: L<http://www.bing.com/toolbox/bingdeveloper/>
 

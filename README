@@ -26,7 +26,7 @@ DESCRIPTION
     documents is not a good discriminator and should be given less weight
     than one which occurs in few documents.
 
-METHOD
+METHODS
   new( %config || \%config )
     Creates a new Lingua::JA::WebIDF instance.
 
@@ -117,7 +117,7 @@ AUTHOR
     pawa <pawapawa@cpan.org>
 
 SEE ALSO
-    Lingua::JA::TFIDF
+    Lingua::JA::TFWebIDF
 
     Bing API: <http://www.bing.com/toolbox/bingdeveloper/>
 
