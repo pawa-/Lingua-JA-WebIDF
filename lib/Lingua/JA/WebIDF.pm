@@ -8,7 +8,7 @@ use Carp ();
 use Module::Load ();
 use Furl::HTTP;
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 
 my $PM_PATH = $INC{ join( '/', split('::', __PACKAGE__) ) . '.pm' };
 $PM_PATH =~ s/\.pm$//;
@@ -277,8 +277,18 @@ Saves WebDF scores to the specified path.
 
 If undef is specified, 'yahoo_utf8.st' is used.
 This file is located in 'Lingua/JA/WebIDF/'
-and contains the WebDF scores of about 60000 words.
+and contains the WebDF scores of about 100000 words.
 There are other format files in the 'df' directory of this library.
+
+The 100000 words were fetched from following data.
+
+=over 4
+
+=item * Noun.csv and Noun.adjv.csv in IPA dictionary
+
+=item * Japanese WordNet
+
+=back
 
 I recommend that you change the file depending on the type of Web API
 you specifies because WebDF may be different depending on it.
