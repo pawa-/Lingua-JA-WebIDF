@@ -191,8 +191,7 @@ my ($appid);
 
   use Lingua::JA::WebIDF;
 
-  my $webidf = Lingua::JA::WebIDF->new
-  (
+  my $webidf = Lingua::JA::WebIDF->new(
       api       => 'Yahoo',
       appid     => $appid,
       fetch_df  => 1,
