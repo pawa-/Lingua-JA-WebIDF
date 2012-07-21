@@ -9,7 +9,7 @@ use Module::Load ();
 use Furl::HTTP;
 use File::ShareDir qw/dist_file/;
 
-our $VERSION = '0.14';
+our $VERSION = '0.20';
 
 
 sub _options
