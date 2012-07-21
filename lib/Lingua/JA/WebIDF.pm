@@ -7,14 +7,12 @@ use warnings;
 use Carp ();
 use Module::Load ();
 use Furl::HTTP;
+use File::ShareDir qw/dist_file/;
 
 our $VERSION = '0.14';
 
 my $PM_PATH = $INC{ join( '/', split('::', __PACKAGE__) ) . '.pm' };
 $PM_PATH =~ s/\.pm$//;
-
-my @SUPPORTED_API    = _plugin_list('API');
-my @SUPPORTED_DRIVER = _plugin_list('Driver');
 
 
 sub _options
@@ -47,8 +45,8 @@ sub new
     }
 
     Carp::croak('appid is needed')                        unless defined $options->{appid};
-    Carp::croak("Unknown driver: $options->{driver}")     unless grep { $options->{driver} eq $_   } @SUPPORTED_DRIVER;
-    Carp::croak("Unknown api: $options->{api}")           unless grep { $options->{api}    eq $_   } @SUPPORTED_API;
+    Carp::croak("Unknown driver: $options->{driver}")     unless grep { $options->{driver} eq $_   } _plugin_list('Driver');
+    Carp::croak("Unknown api: $options->{api}")           unless grep { $options->{api}    eq $_   } _plugin_list('API');
     Carp::croak("Unknown idf type: $options->{idf_type}") unless grep { $options->{idf_type} eq $_ } 1 .. 3;
 
     if (defined $options->{Furl_HTTP})
@@ -57,10 +55,10 @@ sub new
     }
     else { $options->{furl_http} = Furl::HTTP->new; }
 
-    Module::Load::load(__PACKAGE__ . '::API::' . $options->{api});
+    Module::Load::load(__PACKAGE__ . '::API::'    . $options->{api});
     Module::Load::load(__PACKAGE__ . '::Driver::' . $options->{driver});
 
-    $options->{df_file} = "$PM_PATH/yahoo_utf8.st" unless defined $options->{df_file};
+    $options->{df_file} = dist_file('Lingua-JA-WebIDF', 'yahoo_utf8.st') unless defined $options->{df_file};
 
     bless $options, $class;
 }
