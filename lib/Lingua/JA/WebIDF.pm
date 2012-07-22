@@ -62,15 +62,21 @@ sub new
 
 sub idf
 {
-    my ($self, $word) = @_;
+    my ($self, $word, $is_df) = @_;
 
     if (!defined $word)
     {
-        Carp::carp("Undefined word has been set");
+        if (!defined $is_df) { Carp::carp("Undefined word has been set"); }
+        else                 { Carp::carp("Undefined df has been set");   }
+
         return;
     }
 
-    my $df   = $self->df($word);
+    my $df;
+
+    if (!$is_df) { $df = $self->df($word); }
+    else         { $df = $word;            }
+
     my $N    = $self->{documents};
     my $type = $self->{idf_type};
 
