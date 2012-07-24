@@ -105,7 +105,7 @@ sub df
         return;
     }
 
-    $word =~ tr/\t/ /;
+    $word =~ s/\t+/ /g;
     my $df_and_time = $self->_fetch_df($word);
 
     my ($df, $time, $elapsed_time);

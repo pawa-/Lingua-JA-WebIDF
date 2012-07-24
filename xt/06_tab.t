@@ -20,6 +20,14 @@ my $df = $webidf->df("テス\tト");
 is($webidf->df('テス ト'), $df, 'tab to space');
 
 $df = $webidf->df('アア' . "\t" x 10 . 'ア');
+
+$webidf = Lingua::JA::WebIDF->new(
+    api      => 'Yahoo',
+    appid    => 'test',
+    fetch_df => 0,
+    df_file  => 'df.st',
+);
+
 is($webidf->df('アア ア'), $df, 'tabs to space');
 
 unlink 'df.st';
