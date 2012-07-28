@@ -393,6 +393,8 @@ pawa E<lt>pawapawa@cpan.orgE<gt>
 
 L<Lingua::JA::TFWebIDF>
 
+L<Lingua::JA::WebIDF::Driver::TokyoTyrant>
+
 Bing API: L<http://www.bing.com/toolbox/bingdeveloper/>
 
 Yahoo API: L<http://developer.yahoo.co.jp/>
