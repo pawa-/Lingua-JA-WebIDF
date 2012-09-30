@@ -4,22 +4,17 @@ NAME
 SYNOPSIS
       use Lingua::JA::WebIDF;
 
-      my $webidf = Lingua::JA::WebIDF->new(
-          api       => 'Yahoo',
-          appid     => $appid,
-          fetch_df  => 1,
-          Furl_HTTP => { timeout => 3 }
-      );
+      my $webidf = Lingua::JA::WebIDF->new;
 
       print $webidf->idf("東京"); # low
       print $webidf->idf("スリジャヤワルダナプラコッテ"); # high
 
 DESCRIPTION
-    Lingua::JA::WebIDF calculates WebIDF scores.
+    Lingua::JA::WebIDF calculates WebIDF weight.
 
-    WebIDF(Inverse Document Frequency) scores represent the rarity of words
-    on the Web. The WebIDF scores of rare words are high. Conversely, the
-    WebIDF scores of common words are low.
+    WebIDF(Inverse Document Frequency) weight represents the rarity of words
+    on the Web. The WebIDF weight of rare words are high. Conversely, the
+    WebIDF weight of common words are low.
 
     IDF is based on the intuition that a query term which occurs in many
     documents is not a good discriminator and should be given less weight
@@ -34,11 +29,11 @@ METHODS
       KEY                 DEFAULT VALUE
       -----------         ---------------
       idf_type            1
-      api                 'Yahoo'
+      api                 'YahooPremium'
       appid               undef
-      driver              'Storable'
-      df_file             undef
-      fetch_df            1
+      driver              'TokyoCabinet'
+      df_file             './df.tch'
+      fetch_df            0
       expires_in          365
       documents           250_0000_0000
       Furl_HTTP           undef
@@ -68,36 +63,27 @@ METHODS
 
     api => 'Yahoo' || 'YahooPremium' || 'Bing'
         Uses the specified Web API when fetches WebDF(Document Frequency)
-        scores from the Web.
+        weight via the Web.
 
     driver => 'Storable' || 'TokyoCabinet'
-        Fetches and saves WebDF scores with the specified driver.
+        Fetches and saves WebDF weight with the specified driver.
 
     df_file => $path
-        Saves WebDF scores to the specified path.
+        Saves WebDF weight to the specified path.
 
-        If undef is specified, 'yahoo_utf8.st' is used. This file is located
-        in File::ShareDir::dist_dir('Lingua-JA-WebIDF'), and contains the
-        WebDF scores of about 100000 words. There are other format files in
-        the 'share' directory of this library.
-
-        The 100000 words were fetched from the following data.
-
-        *   Noun.csv and Noun.adjv.csv in IPA dictionary
-
-        *   Japanese WordNet
+        Please download from <http://misc.pawafuru.com/webidf/>.
 
         I recommend that you change the file depending on the type of Web
         API you specifies because WebDF may be different depending on it.
 
     fech_df => 0
-        Doesn't fetch WebDF scores. (If 0 is specified.)
+        Doesn't fetch WebDF weight via the Web if 0 is specified.
 
-        If the WebDF score you want to know is already saved, it is used.
+        If the WebDF weight you want to know is already saved, it is used.
         Otherwise, returns undef.
 
     expires_in => $days
-        If 365 is specified, a WebDF score expires in 365 days after fetches
+        If 365 is specified, WebDF weight expires in 365 days after fetches
         it.
 
     Furl_HTTP => \%option
@@ -106,16 +92,16 @@ METHODS
         If you want to use proxy server, you have to use this option.
 
   idf($word)
-    Calculates the WebIDF score of $word.
+    Calculates the WebIDF weight of $word.
 
-    If the WebDF score of $word is not saved or is expired, fetches it by
-    using the Web API you specified and saves it.
+    If the WebDF weight of $word has not been saved yet or is expired,
+    fetches it by using the Web API you specified and saves it.
 
   df($word)
-    Fetches the WebDF score of $word.
+    Fetches the WebDF weight of $word.
 
-    If the WebDF score of $word is not saved or is expired, fetches it by
-    using the Web API you specified and saves it.
+    If the WebDF weight of $word has not been saved or is expired, fetches
+    it by using the Web API you specified and saves it.
 
   db_open($mode)
     Opens the database file.
@@ -128,8 +114,8 @@ METHODS
   db_close
     Closes the database file.
 
-    This method is called automatically when the object is destroyed. So,
-    you might not need to use this method explicitly.
+    This method is called automatically when the object is destroyed, so you
+    might not need to use this method explicitly.
 
   purge($expires_in)
     Purges old data in df_file.

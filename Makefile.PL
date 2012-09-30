@@ -9,7 +9,6 @@ requires 'URI';
 requires 'Furl::HTTP';
 requires 'JSON';
 requires 'Storable';
-requires 'File::ShareDir' => 1.00;
 
 test_requires 'Test::More' => 0.98;
 test_requires 'Test::Fatal';
@@ -27,7 +26,5 @@ resources(
     repository => 'https://github.com/pawa-/Lingua-JA-WebIDF',
     bugtracker => 'https://github.com/pawa-/Lingua-JA-WebIDF/issues',
 );
-
-install_share;
 
 WriteAll;
