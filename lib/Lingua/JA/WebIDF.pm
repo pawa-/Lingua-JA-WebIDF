@@ -23,6 +23,7 @@ sub _options
         api           => 'YahooPremium',
         appid         => undef,
         Furl_HTTP     => undef,
+        verbose       => 1,
     };
 }
 
@@ -61,8 +62,11 @@ sub idf
 
     if (!defined $word || !length $word)
     {
-        if (!defined $is_df) { Carp::carp("Undefined or empty word has been set"); }
-        else                 { Carp::carp("Undefined or empty df has been set");   }
+        if ($self->{verbose})
+        {
+            if (!defined $is_df) { Carp::carp("Undefined or empty word has been set"); }
+            else                 { Carp::carp("Undefined or empty df has been set");   }
+        }
 
         return;
     }
@@ -100,7 +104,7 @@ sub df
 
     if (!defined $word || !length $word)
     {
-        Carp::carp("Undefined or empty word has been set");
+        Carp::carp("Undefined or empty word has been set") if $self->{verbose};
         return;
     }
 
@@ -132,7 +136,11 @@ sub df
 
     if (!defined $df)
     {
-        Carp::carp("DF of '$word' is not found. Please use fetch_df option") unless $self->{fetch_df};
+        if ($self->{verbose})
+        {
+            Carp::carp("DF of '$word' is not found. Please use fetch_df option") unless $self->{fetch_df};
+        }
+
         return;
     }
 
@@ -251,6 +259,7 @@ The following configuration is used if you don't set %config.
   expires_in          365
   documents           250_0000_0000
   Furl_HTTP           undef
+  verbose             1
 
 =over 4
 
@@ -280,7 +289,7 @@ The type3 is a modification of (2).
   w_i = log -----------  (3)
              n_i + 0.5
 
-=item api => 'Yahoo' || 'YahooPremium' || 'Bing'
+=item api => 'Yahoo' || 'YahooPremium'
 
 Uses the specified Web API when fetches WebDF(Document Frequency) weight
 via the Web.
@@ -303,7 +312,7 @@ you specifies because WebDF may be different depending on it.
 Doesn't fetch WebDF weight via the Web if 0 is specified.
 
 If the WebDF weight you want to know is already saved, it is used.
-Otherwise, returns undef.
+If not so, returns undef.
 
 =item expires_in => $days
 
@@ -315,20 +324,24 @@ Sets the options of L<Furl::HTTP>->new.
 
 If you want to use proxy server, you have to use this option.
 
+=item verbose => 1 || 0
+
+If 1 is specified, shows verbose error messages.
+
 =back
 
 =head2 idf($word)
 
 Calculates the WebIDF weight of $word.
 
-If the WebDF weight of $word has not been saved yet or is expired,
+If the WebDF weight of $word has not been saved yet or has expired,
 fetches it by using the Web API you specified and saves it.
 
 =head2 df($word)
 
 Fetches the WebDF weight of $word.
 
-If the WebDF weight of $word has not been saved or is expired,
+If the WebDF weight of $word has not been saved yet or has expired,
 fetches it by using the Web API you specified and saves it.
 
 =head2 db_open($mode)
@@ -362,8 +375,6 @@ pawa E<lt>pawapawa@cpan.orgE<gt>
 L<Lingua::JA::TFWebIDF>
 
 L<Lingua::JA::WebIDF::Driver::TokyoTyrant>
-
-Bing API: L<http://www.bing.com/toolbox/bingdeveloper/>
 
 Yahoo API: L<http://developer.yahoo.co.jp/>
 

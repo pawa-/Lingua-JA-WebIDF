@@ -37,6 +37,7 @@ METHODS
       expires_in          365
       documents           250_0000_0000
       Furl_HTTP           undef
+      verbose             1
 
     idf_type => 1 || 2 || 3
         The type1 is the most commonly cited form of IDF.
@@ -61,7 +62,7 @@ METHODS
           w_i = log -----------  (3)
                      n_i + 0.5
 
-    api => 'Yahoo' || 'YahooPremium' || 'Bing'
+    api => 'Yahoo' || 'YahooPremium'
         Uses the specified Web API when fetches WebDF(Document Frequency)
         weight via the Web.
 
@@ -79,8 +80,8 @@ METHODS
     fech_df => 0
         Doesn't fetch WebDF weight via the Web if 0 is specified.
 
-        If the WebDF weight you want to know is already saved, it is used.
-        Otherwise, returns undef.
+        If the WebDF weight you want to know is already saved, it is used,
+        otherwise returns undef.
 
     expires_in => $days
         If 365 is specified, WebDF weight expires in 365 days after fetches
@@ -91,17 +92,20 @@ METHODS
 
         If you want to use proxy server, you have to use this option.
 
+    verbose => 1 || 0
+        If 1 is specified, shows verbose error messages.
+
   idf($word)
     Calculates the WebIDF weight of $word.
 
-    If the WebDF weight of $word has not been saved yet or is expired,
+    If the WebDF weight of $word has not been saved yet or has expired,
     fetches it by using the Web API you specified and saves it.
 
   df($word)
     Fetches the WebDF weight of $word.
 
-    If the WebDF weight of $word has not been saved or is expired, fetches
-    it by using the Web API you specified and saves it.
+    If the WebDF weight of $word has not been saved yet or has expired,
+    fetches it by using the Web API you specified and saves it.
 
   db_open($mode)
     Opens the database file.
@@ -129,8 +133,6 @@ SEE ALSO
     Lingua::JA::TFWebIDF
 
     Lingua::JA::WebIDF::Driver::TokyoTyrant
-
-    Bing API: <http://www.bing.com/toolbox/bingdeveloper/>
 
     Yahoo API: <http://developer.yahoo.co.jp/>
 
