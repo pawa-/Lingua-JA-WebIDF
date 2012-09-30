@@ -7,7 +7,6 @@ requires 'Carp';
 requires 'Module::Load' => 0.22; # less than 0.22 has a security problem
 requires 'URI';
 requires 'Furl::HTTP';
-requires 'JSON';
 requires 'Storable';
 
 test_requires 'Test::More' => 0.98;
