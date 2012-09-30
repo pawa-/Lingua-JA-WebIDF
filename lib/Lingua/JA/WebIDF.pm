@@ -132,7 +132,7 @@ sub df
 
     if (!defined $df)
     {
-        Carp::carp("DF of $word is not found. Please use fetch_df option") unless $self->{fetch_df};
+        Carp::carp("DF of '$word' is not found. Please use fetch_df option") unless $self->{fetch_df};
         return;
     }
 
