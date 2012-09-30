@@ -79,8 +79,11 @@ subtest 'df method' => sub {
     qr/Undefined or empty word/, 'set an empty word';
     is($weight, undef);
 
-    isnt($webidf->df('川'), undef,     "fetch df of '川' from df file");
-    is($webidf->df('川' x 100), undef, "fetch df of '川' x 100 from df file");
+    isnt($webidf->df('川'), undef, "fetch df of '川' from df file");
+
+    warning_like { $weight = $webidf->idf('川' x 100); }
+    qr/use fetch_df/, "calculate idf of '川' x 100 via df file";
+    is($weight, undef, "calculate idf of '川' x 100 via df file");
 
     $webidf->db_close;
 };
@@ -104,22 +107,25 @@ subtest 'idf method' => sub {
 
     warning_like { $weight = $webidf->idf; }
     qr/Undefined or empty word/, 'set an undefined word';
-    is ($weight, undef);
+    is($weight, undef);
 
     warning_like { $weight = $webidf->idf(''); }
     qr/Undefined or empty word/, 'set an empty word';
-    is ($weight, undef);
+    is($weight, undef);
 
     warning_like { $weight = $webidf->idf(undef, 'df'); }
     qr/Undefined or empty df/, 'set an undefined df';
-    is ($weight, undef);
+    is($weight, undef);
 
     warning_like { $weight = $webidf->idf('', 'df'); }
     qr/Undefined or empty df/, 'set an empty df';
-    is ($weight, undef);
+    is($weight, undef);
 
-    isnt($webidf->idf('川'), undef,     "calculate idf of '川' via df file");
-    is($webidf->idf('川' x 100), undef, "calculate idf of '川' x 100 via df file");
+    isnt($webidf->idf('川'), undef, "calculate idf of '川' via df file");
+
+    warning_like { $weight = $webidf->idf('川' x 100); }
+    qr/use fetch_df/, "calculate idf of '川' x 100 via df file";
+    is($weight, undef, "calculate idf of '川' x 100 via df file");
 
     my $df = 100;
     is($webidf->idf($df, 'df'), log($num_of_documents / $df), 'calculate idf with the given df');

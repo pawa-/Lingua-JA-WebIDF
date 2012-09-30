@@ -118,15 +118,22 @@ sub df
 
     if ( !defined $df_and_time || $elapsed_time >= (60 * 60 * 24 * $self->{expires_in}) )
     {
-        my $new_df;
-
-        $new_df = $self->_fetch_new_df($word) if $self->{fetch_df};
-
-        if (defined $new_df)
+        if ($self->{fetch_df})
         {
-            $self->_save_df($word, $new_df);
-            return $new_df;
+            my $new_df = $self->_fetch_new_df($word);
+
+            if (defined $new_df)
+            {
+                $self->_save_df($word, $new_df);
+                return $new_df;
+            }
         }
+    }
+
+    if (!defined $df)
+    {
+        Carp::carp("DF of $word is not found. Please use fetch_df option") unless $self->{fetch_df};
+        return;
     }
 
     return $df;

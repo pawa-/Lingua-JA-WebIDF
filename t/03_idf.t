@@ -134,8 +134,8 @@ test_tcp(
                                     }
                                     else
                                     {
-                                        warning_is { $df = $webidf->df($word); }
-                                        '', $test_pattern;
+                                        warning_like { $df = $webidf->df($word); }
+                                        qr/use fetch_df/, $test_pattern;
 
                                         is($df, undef, $test_pattern);
                                     }
@@ -187,22 +187,22 @@ test_tcp(
 
                                     if ($word eq $WORD[3])
                                     {
-                                        warning_is { $df = $webidf->df($word); }
-                                        '', $test_pattern;
+                                        warning_like { $df = $webidf->df($word); }
+                                        qr/use fetch_df/, $test_pattern;
 
                                         is($df, undef, $test_pattern);
                                     }
                                     elsif ($word eq $WORD[2])
                                     {
-                                        warning_is { $df = $webidf->df($word); }
-                                        '', $test_pattern;
+                                        warning_like { $df = $webidf->df($word); }
+                                        qr/use fetch_df/, $test_pattern;
 
                                         is($df, undef, $test_pattern);
                                     }
                                     elsif ($word eq $WORD[1])
                                     {
-                                        warning_is { $df = $webidf->df($word); }
-                                        '', $test_pattern;
+                                        warning_like { $df = $webidf->df($word); }
+                                        qr/use fetch_df/, $test_pattern;
 
                                         is( $df, undef, $test_pattern );
                                     }

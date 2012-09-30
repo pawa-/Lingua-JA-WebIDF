@@ -125,8 +125,16 @@ test_tcp(
                                 }
                                 else # fetch_df: false
                                 {
-                                    warning_is { $df = $webidf->df($word); }
-                                    '', $test_pattern;
+                                    if ($word eq $WORD[6])
+                                    {
+                                        warning_like { $df = $webidf->df($word); }
+                                        qr/use fetch_df/, $test_pattern;
+                                    }
+                                    else
+                                    {
+                                        warning_is { $df = $webidf->df($word); }
+                                        '', $test_pattern;
+                                    }
                                 }
 
                                 is($df, 10000, $test_pattern) if $word eq $WORD[0];
@@ -179,8 +187,16 @@ test_tcp(
                                 {
                                     my $df;
 
-                                    warning_is { $df = $webidf->df($word); }
-                                    '', $test_pattern;
+                                    if ($word eq $WORD[6])
+                                    {
+                                        warning_like { $df = $webidf->df($word); }
+                                        qr/use fetch_df/, $test_pattern;
+                                    }
+                                    else
+                                    {
+                                        warning_is { $df = $webidf->df($word); }
+                                        '', $test_pattern;
+                                    }
 
                                     is($df, 10000, $test_pattern) if $word eq $WORD[0];
                                     is($df, 1000,  $test_pattern) if $word eq $WORD[1];
