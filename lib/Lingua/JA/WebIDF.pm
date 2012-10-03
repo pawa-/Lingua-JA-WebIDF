@@ -138,7 +138,7 @@ sub df
     {
         if ($self->{verbose})
         {
-            Carp::carp("DF of '$word' is not found. Please use fetch_df option") unless $self->{fetch_df};
+            Carp::carp("DF of '$word' is not found in df file. Please use fetch_df option") unless $self->{fetch_df};
         }
 
         return;
@@ -208,6 +208,7 @@ sub _fetch_new_df
 }
 
 1;
+
 __END__
 
 =encoding utf8
