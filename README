@@ -80,8 +80,8 @@ METHODS
     fech_df => 0
         Doesn't fetch WebDF weight via the Web if 0 is specified.
 
-        If the WebDF weight you want to know is already saved, it is used,
-        otherwise returns undef.
+        If the WebDF weight you want to know is already saved, it is used.
+        If not so, returns undef.
 
     expires_in => $days
         If 365 is specified, WebDF weight expires in 365 days after fetches
