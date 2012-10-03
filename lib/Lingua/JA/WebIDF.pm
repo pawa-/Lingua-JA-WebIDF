@@ -303,7 +303,7 @@ Fetches and saves WebDF with the specified driver.
 Saves WebDF to the specified path.
 
 In order to reduce access to Web API,
-Please download a big df file from L<http://misc.pawafuru.com/webidf/>.
+please download a big df file from L<http://misc.pawafuru.com/webidf/>.
 
 I recommend that you change the file depending on the type of Web API
 you specifies because WebDF may be different depending on it.

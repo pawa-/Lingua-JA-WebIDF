@@ -71,7 +71,7 @@ METHODS
     df_file => $path
         Saves WebDF to the specified path.
 
-        In order to reduce access to Web API, Please download a big df file
+        In order to reduce access to Web API, please download a big df file
         from <http://misc.pawafuru.com/webidf/>.
 
         I recommend that you change the file depending on the type of Web
