@@ -234,8 +234,8 @@ my ($appid);
 Lingua::JA::WebIDF calculates WebIDF weight.
 
 WebIDF(Inverse Document Frequency) weight represents the rarity of words on the Web.
-The WebIDF weight of rare words are high.
-Conversely, the WebIDF weight of common words are low.
+The WebIDF weight of rare words is high.
+Conversely, the WebIDF weight of common words is low.
 
 IDF is based on the intuition that a query term which occurs in
 many documents is not a good discriminator and should be given less weight
@@ -279,45 +279,45 @@ The type1 is the most commonly cited form of IDF.
 
 The type2 is a simple version of the RSJ weight.
 
-              N - n_i + 0.5
-  w_i = log ----------------  (2)
-               n_i + 0.5
+                   N - n_i + 0.5
+  idf(t_i) = log ----------------  (2)
+                    n_i + 0.5
 
 
 The type3 is a modification of (2).
 
-              N + 0.5
-  w_i = log -----------  (3)
-             n_i + 0.5
+                   N + 0.5
+  idf(t_i) = log -----------  (3)
+                  n_i + 0.5
 
 =item api => 'Yahoo' || 'YahooPremium'
 
-Uses the specified Web API when fetches WebDF(Document Frequency) weight
-via the Web.
+Uses the specified Web API when fetches WebDF(Document Frequency).
 
 =item driver => 'Storable' || 'TokyoCabinet'
 
-Fetches and saves WebDF weight with the specified driver.
+Fetches and saves WebDF with the specified driver.
 
 =item df_file => $path
 
-Saves WebDF weight to the specified path.
+Saves WebDF to the specified path.
 
-Please download from L<http://misc.pawafuru.com/webidf/>.
+In order to reduce access to Web API,
+Please download a big df file from L<http://misc.pawafuru.com/webidf/>.
 
 I recommend that you change the file depending on the type of Web API
 you specifies because WebDF may be different depending on it.
 
 =item fech_df => 0
 
-Doesn't fetch WebDF weight via the Web if 0 is specified.
+Never fetches WebDF from the Web if 0 is specified.
 
-If the WebDF weight you want to know is already saved, it is used.
+If the WebDF you want to know is already saved, it is used.
 If not so, returns undef.
 
 =item expires_in => $days
 
-If 365 is specified, WebDF weight expires in 365 days after fetches it.
+If 365 is specified, WebDF expires in 365 days after fetches it.
 
 =item Furl_HTTP => \%option
 
@@ -333,30 +333,30 @@ If 1 is specified, shows verbose error messages.
 
 =head2 idf($word)
 
-Calculates the WebIDF weight of $word.
-
-If the WebDF weight of $word has not been saved yet or has expired,
-fetches it by using the Web API you specified and saves it.
+Calculates the WebIDF weight of $word via df($word) method.
 
 =head2 df($word)
 
-Fetches the WebDF weight of $word.
+Fetches the WebDF of $word.
 
-If the WebDF weight of $word has not been saved yet or has expired,
+If the WebDF of $word has not been saved yet or has expired,
 fetches it by using the Web API you specified and saves it.
+
+If the WebDF of $word expires and fetch_df is 0,
+the expiring WebDF of $word is used.
 
 =head2 db_open($mode)
 
-Opens the database file.
+Opens the database file which is located in $path.
 
-If you use TokyoCabinet, you have to open database file
-by using this method before idf|df|db_close|purge method is called.
+If you use TokyoCabinet, you have to open the database file
+via this method before idf|df|db_close|purge method is called.
 
 $mode is 'read' or 'write'.
 
 =head2 db_close
 
-Closes the database file.
+Closes the database file which is located in $path.
 
 This method is called automatically when the object is destroyed,
 so you might not need to use this method explicitly.
