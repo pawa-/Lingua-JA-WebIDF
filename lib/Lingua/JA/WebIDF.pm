@@ -8,7 +8,7 @@ use Carp ();
 use Module::Load ();
 use Furl::HTTP;
 
-our $VERSION = '0.32';
+our $VERSION = '0.40';
 
 
 sub _options
@@ -218,13 +218,13 @@ __END__
 Lingua::JA::WebIDF - WebIDF calculator
 
 =for test_synopsis
-my ($appid);
+my (%config);
 
 =head1 SYNOPSIS
 
   use Lingua::JA::WebIDF;
 
-  my $webidf = Lingua::JA::WebIDF->new;
+  my $webidf = Lingua::JA::WebIDF->new(%config);
 
   print $webidf->idf("東京"); # low
   print $webidf->idf("スリジャヤワルダナプラコッテ"); # high
@@ -233,9 +233,9 @@ my ($appid);
 
 Lingua::JA::WebIDF calculates WebIDF weight.
 
-WebIDF(Inverse Document Frequency) weight represents the rarity of words on the Web.
-The WebIDF weight of rare words is high.
-Conversely, the WebIDF weight of common words is low.
+WebIDF(Inverse Document Frequency) weight represents the rarity of a word on the Web.
+The WebIDF weight of a rare word is high.
+Conversely, the WebIDF weight of a common word is low.
 
 IDF is based on the intuition that a query term which occurs in
 many documents is not a good discriminator and should be given less weight
@@ -312,8 +312,8 @@ you specifies because WebDF may be different depending on it.
 
 Never fetches WebDF from the Web if 0 is specified.
 
-If the WebDF you want to know is already saved, it is used.
-If not so, returns undef.
+If the WebDF you want to know has already saved, it is used.
+If it is not so, returns undef.
 
 =item expires_in => $days
 
@@ -342,8 +342,8 @@ Fetches the WebDF of $word.
 If the WebDF of $word has not been saved yet or has expired,
 fetches it by using the Web API you specified and saves it.
 
-If the WebDF of $word expires and fetch_df is 0,
-the expiring WebDF of $word is used.
+If the WebDF of $word has expired and fetch_df is 0,
+the expired WebDF is used.
 
 =head2 db_open($mode)
 
